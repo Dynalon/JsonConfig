@@ -10,9 +10,9 @@ namespace JsonConfig.Tests
 	{
 		public static void Main (string[] args)
 		{
-			var c= new Config ();
-			var k = c.DefaultConfig;
-			
+			dynamic x = null;
+			dynamic y = 1;
+			var result = JsonConfig.Merger.Merge (x, y);
 		}
 		public static void PrintDictionary (IDictionary<string, object> dictionary, uint spacecount = 0)
 		{

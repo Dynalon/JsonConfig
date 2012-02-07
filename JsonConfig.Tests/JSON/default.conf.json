@@ -1,3 +1,4 @@
 {
-	"Default" : "found"
+	"Default"	:	"found",
+	"Fruits"	: 	["apple", "peach"]
 } 

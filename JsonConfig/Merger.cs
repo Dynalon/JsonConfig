@@ -8,20 +8,34 @@ namespace JsonConfig
 {
 	public static class Merger
 	{
+		/// <summary>
+		/// Merge the specified obj1 and obj2, where obj1 has precendence.
+		/// </summary>
+		/// <param name='obj1'>
+		/// Obj1. If null, result will be null.
+		/// </param>
+		/// <param name='obj2'>
+		/// Obj2. If null, result will be Obj1
+		/// </param>
+		/// <exception cref='TypeMissmatchException'>
+		/// Is thrown when the type missmatch exception.
+		/// </exception>
 		public static dynamic Merge (dynamic obj1, dynamic obj2)
 		{
+			// handle what happens if one of the args is null
+			if (obj1 == null) return null;
+			if (obj2 == null) return obj1;
+		
+			if (obj1.GetType () != obj2.GetType ())	
+				throw new TypeMissmatchException ();
+			
 			// ExpandoObject implements dictionary
 			// and changes in the dictionary WILL REFLECT back to the
-			// dynamic object automatically
 			var dict1 = obj1 as IDictionary<string, object>;
 			var dict2 = obj2 as IDictionary<string, object>;
 
 			dynamic result = new ExpandoObject ();
 			var rdict = result as IDictionary<string, object>;
-			
-			// if only one of them is null, we have type missmatch
-			var mismatch = ((dict1 == null) ^ (dict2 == null));
-			if(mismatch) throw new TypeMissmatchException ();
 			
 			// first, copy all non colliding keys over
 	        foreach (var kvp in dict1)
@@ -57,7 +71,7 @@ namespace JsonConfig
 					rdict[key] = CollectionMerge (val1, val2); */
 				}
 				else if (value1 is ExpandoObject) {
-					rdict[key] = Merge (value1, value2);
+					rdict[key] = Merge ((ExpandoObject) value1, (ExpandoObject) value2);
 				}
 				else if (value1 is string)
 				{
@@ -74,7 +88,7 @@ namespace JsonConfig
 					// recursively merge it	
 				//}
 			}
-			return rdict;
+			return result;
 		}
 		public static dynamic CollectionMerge (dynamic obj1, dynamic obj2)
 		{

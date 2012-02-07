@@ -46,6 +46,8 @@
     <Compile Include="JsonFormater.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="InvalidJson.cs" />
+    <Compile Include="Merger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

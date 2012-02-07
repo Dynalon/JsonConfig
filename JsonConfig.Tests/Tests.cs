@@ -76,5 +76,7 @@ namespace JsonConfig.Tests
 			
 			Assert.That (conf.Default == "blubb");
 		}
+
+
 	}
 }

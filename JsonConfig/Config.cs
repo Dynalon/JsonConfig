@@ -66,4 +66,14 @@ namespace JsonConfig
 			
 		}
 	}
+	public static class DynamicExtension
+	{
+		public static bool MemberExists (this ExpandoObject d, string name)
+		{
+			var dict = d as IDictionary<string, object>;
+			if (dict.ContainsKey (name))
+				return true;
+			return false;
+		}
+	}
 }
