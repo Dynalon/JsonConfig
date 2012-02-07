@@ -17,9 +17,17 @@ namespace JsonConfig
 			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
 			DefaultConfig = getDefaultConfig (assembly);
 		}
-		public Config (string userConfigPath) : this ()
+		public dynamic ApplyFile (string userConfigPath) 
 		{
-			var text = File.ReadAllText (userConfigPath);
+			var userconfig_json = File.ReadAllText (userConfigPath);
+			dynamic userconfig = ParseJson (userconfig_json);
+	
+			return Merger.Merge (userconfig, DefaultConfig);	
+		}
+		public dynamic ApplyJson (string jsonConfig)
+		{
+			dynamic userconfig = ParseJson (jsonConfig);
+			return Merger.Merge (userconfig, DefaultConfig);
 		}
 		public static dynamic ParseJson (string json)
 		{
@@ -46,10 +54,9 @@ namespace JsonConfig
 					r.EndsWith ("default.conf.json", StringComparison.OrdinalIgnoreCase))
 				.FirstOrDefault ();
 			
-			Console.WriteLine ("it is "  + dconf_resource + " count: " + res.Length);
 		
-			foreach(string s in res)
-				Console.WriteLine ("res {0}", s);
+			//foreach(string s in res)
+				//Console.WriteLine ("res {0}", s);
 			if(string.IsNullOrEmpty (dconf_resource))
 				return null;
 		

@@ -67,5 +67,14 @@ namespace JsonConfig.Tests
 			Assert.IsNotNull (c.DefaultConfig);
 			Assert.That (c.DefaultConfig.Default == "found");
 		}
+		[Test]
+		public void UserConfigJsonMerge ()
+		{
+			var user_json = @"{ ""Default"" : ""blubb"" }";
+			var c = new Config ();
+			dynamic conf = c.ApplyJson (user_json);
+			
+			Assert.That (conf.Default == "blubb");
+		}
 	}
 }
