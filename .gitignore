@@ -6,6 +6,5 @@
 *.userprefs
 test-results/
 
-bin/Debug/*
-bin/Release/*
+*/bin/*
 !bin/Debug/JsonConfig.dll
