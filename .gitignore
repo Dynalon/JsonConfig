@@ -1,7 +1,11 @@
 *.pidb
 *.mdb
 *.dll
+!JsonConfig.dll
 *.dll.???
-bin/
 *.userprefs
 test-results/
+
+bin/Debug/*
+bin/Release/*
+!bin/Debug/JsonConfig.dll
