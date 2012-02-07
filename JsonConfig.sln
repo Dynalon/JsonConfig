@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonConfig", "JsonConfig\JsonConfig.csproj", "{10095092-E1E5-441F-9380-B6329F3CFEB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonConfig.Tests", "JsonConfig.Tests\JsonConfig.Tests.csproj", "{402F5791-B95A-4226-A3B1-5961B24AED2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Default|Any CPU = Default|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10095092-E1E5-441F-9380-B6329F3CFEB4}.Debug|x86.ActiveCfg = Debug|x86
+		{10095092-E1E5-441F-9380-B6329F3CFEB4}.Debug|x86.Build.0 = Debug|x86
+		{10095092-E1E5-441F-9380-B6329F3CFEB4}.Release|x86.ActiveCfg = Release|x86
+		{10095092-E1E5-441F-9380-B6329F3CFEB4}.Release|x86.Build.0 = Release|x86
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Debug|x86.Build.0 = Debug|Any CPU
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Release|x86.ActiveCfg = Release|Any CPU
+		{402F5791-B95A-4226-A3B1-5961B24AED2D}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = JsonConfig.Tests\JsonConfig.Tests.csproj
+	EndGlobalSection
+EndGlobal

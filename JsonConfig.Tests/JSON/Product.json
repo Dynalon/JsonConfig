@@ -1,0 +1,32 @@
+{
+	"Amazon" : {
+		"Price" : 129,
+		"DeliveryTime" : 3,
+		"Rating": {
+			"Stars"	:	[5.0],
+			"Comments" : [
+				{
+					"Author": "Jane Doe",	
+					"Text":	"Awesome product!"
+				}
+			]
+		}
+ 	},
+ 	"WalMart" : {
+ 		"Price" : 149,
+		"DeliveryTime" : 5,
+		"Rating": {
+			"Stars"	:	[1.5, 2.5, 3.5],
+			"Comments" : [
+				{
+					"Author": "Michael Kane",	
+					"Text":	"Great product, indeed."
+				},
+				{
+					"Author": "Simone Spencer",	
+					"Text":	"Totally crap."
+				}
+			]
+		}
+ 	}
+} 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{402F5791-B95A-4226-A3B1-5961B24AED2D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>JsonConfig.Tests</RootNamespace>
+    <AssemblyName>JsonConfig.Tests</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="JsonFx">
+      <HintPath>..\..\Signed_v4.0\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Dynamic" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Basic.cs" />
+    <Compile Include="JsonFormater.cs" />
+    <Compile Include="Tests.cs" />
+    <Compile Include="Main.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="JSON\Product.json" />
+    <EmbeddedResource Include="JSON\Arrays.json" />
+    <EmbeddedResource Include="JSON\Firewall.json" />
+    <EmbeddedResource Include="JSON\default.conf.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JsonConfig\JsonConfig.csproj">
+      <Project>{10095092-E1E5-441F-9380-B6329F3CFEB4}</Project>
+      <Name>JsonConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

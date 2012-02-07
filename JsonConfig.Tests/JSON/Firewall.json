@@ -1,0 +1,33 @@
+{
+	"FactoryDefault"	:
+	{
+		"Zones"	:	
+		[{
+ 			"Name"	: "Loopback",
+ 			"Interface"	: "lo",
+ 			"IP"	:	"127.0.0.1"
+ 		}]
+	},
+	"UserConfig"	:
+	{
+		"Interfaces" : ["eth0", "lo", "eth1"],
+		"Zones"	:	
+		[{
+			"Name"	:	"Internal",
+			"Interface"	:	"eth0",
+			"IP"	:	"192.168.1.1/24",
+			"EnableRouting":	true,
+			"PortMapping"	:
+			[{
+				"SrcPort"	:	8080,
+				"DestIP"	:	"192.168.1.10",
+				"DestPort"	:	80
+			}]	
+		},
+		{
+			"Name"	:	"External",
+			"Interface"	:	"eth1",
+			"UseDhcp"	:	true
+		}]	
+	}
+}

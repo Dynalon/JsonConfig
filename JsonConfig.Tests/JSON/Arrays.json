@@ -1,0 +1,10 @@
+{
+	"Fruit1":
+	{
+		"Fruit"	:	["apple", "banana", "melon"]
+	},
+	"Fruit2":
+	{
+		"Fruit"	:	["apple", "cherry", "coconut"]
+	}
+}

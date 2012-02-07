@@ -1,0 +1,7 @@
+*.pidb
+*.mdb
+*.dll
+*.dll.???
+bin/
+*.userprefs
+test-results/
