@@ -12,22 +12,39 @@ namespace JsonConfig
 {
 	public class Config {
 		public dynamic DefaultConfig = null;
+		public dynamic UserConfig = null;
+	
+		///<summary>
+		///	scope config will represent the current, actual config
+		/// after merging/inheriting from Default & UserConfig
+		/// </summary>
+		public dynamic ScopeConfig = null; 
+		
 		public Config ()
 		{
 			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
 			DefaultConfig = getDefaultConfig (assembly);
+			
+			// default config gets override by user defined config
+			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
+			var userConfigFile = Path.Combine (executionPath, "settings.conf");
+			if (File.Exists (userConfigFile)) {
+				UserConfig = ParseJson (File.ReadAllText (userConfigFile));
+			}
+			ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
+			
 		}
-		public dynamic ApplyFile (string userConfigPath) 
+		public dynamic ApplyJsonFromFile (string overlayConfigPath) 
 		{
-			var userconfig_json = File.ReadAllText (userConfigPath);
-			dynamic userconfig = ParseJson (userconfig_json);
+			var overlay_json = File.ReadAllText (overlayConfigPath);
+			dynamic overlay_config = ParseJson (overlay_json);
 	
-			return Merger.Merge (userconfig, DefaultConfig);	
+			return Merger.Merge (overlay_config, ScopeConfig);	
 		}
 		public dynamic ApplyJson (string jsonConfig)
 		{
-			dynamic userconfig = ParseJson (jsonConfig);
-			return Merger.Merge (userconfig, DefaultConfig);
+			dynamic jsonconfig = ParseJson (jsonConfig);
+			return Merger.Merge (jsonconfig, DefaultConfig);
 		}
 		public static dynamic ParseJson (string json)
 		{
@@ -54,26 +71,25 @@ namespace JsonConfig
 					r.EndsWith ("default.conf.json", StringComparison.OrdinalIgnoreCase))
 				.FirstOrDefault ();
 			
-		
-			//foreach(string s in res)
-				//Console.WriteLine ("res {0}", s);
 			if(string.IsNullOrEmpty (dconf_resource))
 				return null;
 		
 			var stream = assembly.GetManifestResourceStream (dconf_resource);
 			string default_json = new StreamReader(stream).ReadToEnd ();
 			return default_json;
-			
 		}
-	}
-	public static class DynamicExtension
-	{
-		public static bool MemberExists (this ExpandoObject d, string name)
+		public bool ScopeMemberExists (string name)
+		{
+			return MemberExists (ScopeConfig, name);
+		}
+		// TODO have this as Enumerator/Indexer MemberExists(
+		public static bool MemberExists (ExpandoObject d, string name)
 		{
 			var dict = d as IDictionary<string, object>;
 			if (dict.ContainsKey (name))
 				return true;
 			return false;
 		}
+		
 	}
 }
