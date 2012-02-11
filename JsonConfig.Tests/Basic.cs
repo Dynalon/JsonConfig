@@ -14,10 +14,9 @@ namespace JsonConfig.Tests
 		public static dynamic GetUUT(string name)
 		{
 			// read in all our JSON objects
-			var reader = new JsonReader ();
 			var jsonTests = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("JsonConfig.Tests.JSON." + name + ".json");
 			var sReader = new StreamReader (jsonTests);	
-			return reader.Read (sReader.ReadToEnd ());
+			return Config.ParseJson (sReader.ReadToEnd ());
 		}
 		
 		[SetUp]

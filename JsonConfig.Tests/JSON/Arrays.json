@@ -1,10 +1,13 @@
+# Comments can be placed when a line starts with (whitespace +) 
 {
+	# This is a comment
 	"Fruit1":
 	{
 		"Fruit"	:	["apple", "banana", "melon"]
 	},
 	"Fruit2":
 	{
+		# This too is a comment
 		"Fruit"	:	["apple", "cherry", "coconut"]
 	}
 }

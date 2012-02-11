@@ -7,6 +7,7 @@ using System.IO;
 
 using JsonFx;
 using JsonFx.Json;
+using System.Text.RegularExpressions;
 
 namespace JsonConfig 
 {
@@ -48,8 +49,16 @@ namespace JsonConfig
 		}
 		public static dynamic ParseJson (string json)
 		{
+			var lines = json.Split (new char[] {'\n'});
+			// remove lines that start with a dash # character 
+			var filtered = from l in lines
+				where !(Regex.IsMatch (l, @"^\s*#(.*)"))
+				select l;
+			
+			var filtered_json = string.Join ("\n", filtered);
+			
 			var json_reader = new JsonReader ();
-			dynamic parsed = json_reader.Read (json);
+			dynamic parsed = json_reader.Read (filtered_json);
 			return parsed;
 		}
 		protected dynamic getDefaultConfig (Assembly assembly)
