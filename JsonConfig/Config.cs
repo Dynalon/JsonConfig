@@ -26,14 +26,26 @@ namespace JsonConfig
 			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
 			DefaultConfig = getDefaultConfig (assembly);
 			
-			// default config gets override by user defined config
+			// scan for default config
 			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-			var userConfigFile = Path.Combine (executionPath, "settings.conf");
-			if (File.Exists (userConfigFile)) {
-				UserConfig = ParseJson (File.ReadAllText (userConfigFile));
+			var userConfigFileName = "settings.conf";
+			var userConfigFullPath = Path.Combine (executionPath, userConfigFileName);
+			if (File.Exists (userConfigFullPath)) {
+				UserConfig = ParseJson (File.ReadAllText (userConfigFullPath));
+				WatchConfig (executionPath, userConfigFileName);
+				ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
 			}
-			ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
-			
+		}
+		public void WatchConfig (string path, string fileName)
+		{
+			var watcher = new FileSystemWatcher (path, fileName);
+			watcher.NotifyFilter = NotifyFilters.LastWrite;
+			watcher.Changed += delegate {
+				var fullPath = Path.Combine (path, fileName);
+				UserConfig = ParseJson (File.ReadAllText (fullPath));
+				ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
+			};
+			watcher.EnableRaisingEvents = true;	
 		}
 		public dynamic ApplyJsonFromFile (string overlayConfigPath) 
 		{
