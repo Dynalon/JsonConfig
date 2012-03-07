@@ -9,5 +9,26 @@
 	{
 		# This too is a comment
 		"Fruit"	:	["apple", "cherry", "coconut"]
+	},
+	"EmptyFruit":
+	{
+		"Fruit" : []
+	},
+	"Coords1":
+	{
+		"Pairs": [
+			{
+				"X" : 1,
+				"Y" : 1
+			},
+			{
+				"X" : 2,
+				"Y" : 3
+			}
+		]
+	},
+	"Coords2":
+	{
+		"Pairs": []
 	}
 }

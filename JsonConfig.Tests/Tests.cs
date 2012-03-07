@@ -42,6 +42,28 @@ namespace JsonConfig.Tests
 			Assert.That (fruitList.Contains ("coconut"));
 		}
 		[Test]
+		public void ArrayWithEmptyArray ()
+		{
+			dynamic parsed = GetUUT("Arrays");
+			dynamic merged = Merger.Merge (parsed.Fruit1, parsed.EmptyFruit);
+
+			var fruitList = merged.Fruit as ICollection<string>;
+			Assert.AreEqual (3, fruitList.Count);
+			Assert.That (fruitList.Contains ("apple"));
+			Assert.That (fruitList.Contains ("banana"));
+			Assert.That (fruitList.Contains ("melon"));
+		}
+		[Test]
+		public void ComplexArrayWithEmptyArray ()
+		{
+			dynamic parsed = GetUUT("Arrays");
+			dynamic merged = Merger.Merge (parsed.Coords1, parsed.Coords2);
+			
+			var coordList = (ICollection<dynamic>) merged;
+			Assert.AreEqual (2, coordList.Count);
+		}
+		
+		[Test]
 		public void FirewallConfig ()
 		{
 			dynamic parsed = GetUUT ("Firewall");

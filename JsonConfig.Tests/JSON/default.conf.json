@@ -1,4 +1,4 @@
-# this is a comment
+# this is the default config which should be loaded automatically if its embedded as a resource
 {
 	"Default"	:	"found",
 	"Fruits"	: 	["apple", "peach"]
