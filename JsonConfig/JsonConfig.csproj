@@ -41,9 +41,6 @@
       <HintPath>..\..\Signed_v4.0\JsonFx.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Omu.ValueInjecter">
-      <HintPath>..\..\Omu.ValueInjecter.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>

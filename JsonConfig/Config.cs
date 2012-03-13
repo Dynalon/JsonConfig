@@ -31,7 +31,7 @@ namespace JsonConfig
 			var userConfigFileName = "settings.conf";
 			var userConfigFullPath = Path.Combine (executionPath, userConfigFileName);
 			if (File.Exists (userConfigFullPath)) {
-				UserConfig = ParseJson (File.ReadAllText (userConfigFullPath));
+				UserConfig = Config.ParseJson (File.ReadAllText (userConfigFullPath));
 				WatchConfig (executionPath, userConfigFileName);
 				ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
 			}
@@ -47,17 +47,24 @@ namespace JsonConfig
 			};
 			watcher.EnableRaisingEvents = true;	
 		}
-		public dynamic ApplyJsonFromFile (string overlayConfigPath) 
+		public dynamic ApplyJsonFromFile (string overlayConfigPath, bool applyToScope = true) 
 		{
 			var overlay_json = File.ReadAllText (overlayConfigPath);
 			dynamic overlay_config = ParseJson (overlay_json);
-	
-			return Merger.Merge (overlay_config, ScopeConfig);	
+
+			var merged = Merger.Merge (overlay_config, ScopeConfig);	
+			if (applyToScope)
+				ScopeConfig = merged;
+			return merged;
 		}
-		public dynamic ApplyJson (string jsonConfig)
+		
+		public dynamic ApplyJson (string jsonConfig, bool applyToScope = true)
 		{
-			dynamic jsonconfig = ParseJson (jsonConfig);
-			return Merger.Merge (jsonconfig, DefaultConfig);
+			dynamic jsonconfig = Config.ParseJson (jsonConfig);
+			var merged = Merger.Merge (jsonconfig, ScopeConfig);
+			if (applyToScope)
+				ScopeConfig = merged;
+			return merged;
 		}
 		public static dynamic ParseJson (string json)
 		{
