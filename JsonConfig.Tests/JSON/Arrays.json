@@ -1,5 +1,8 @@
 # Comments can be placed when a line starts with (whitespace +) 
 {
+	
+	"Default" : "arrays",
+
 	# This is a comment
 	"Fruit1":
 	{

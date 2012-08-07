@@ -7,6 +7,7 @@ using Microsoft.CSharp;
 using JsonFx;
 using NUnit.Framework;
 using JsonConfig;
+using System.Reflection;
 
 
 namespace JsonConfig.Tests
@@ -98,7 +99,13 @@ namespace JsonConfig.Tests
 			
 			Assert.That (conf.Default == "blubb");
 		}
-
-
+		[Test]
+		public void UserConfigFromFile ()
+		{
+			var c = new Config ();
+			var user_config = c.ApplyJsonFromFile ("../../JSON/Arrays.json");
+		
+			Assert.That (user_config.Default == "arrays");
+		}
 	}
 }
