@@ -1,13 +1,8 @@
 # bin folder
 bin/
 *.dll
-*.exe
-!lib/*.exe
-!lib/*.dll
 *.mdb
-*.pidb
-*.userprefs
-test-results/
+*.exe
 
 # OS X files
 .DS_Store
