@@ -33,12 +33,12 @@
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <Private>False</Private>
     </Reference>
-    <Reference Include="JsonFx">
-      <HintPath>..\..\Signed_v4.0\JsonFx.dll</HintPath>
-    </Reference>
     <Reference Include="System.Dynamic" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="JsonFx">
+      <HintPath>..\lib\JsonFx.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
