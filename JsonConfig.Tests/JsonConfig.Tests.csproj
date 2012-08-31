@@ -30,14 +30,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Dynamic" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="JsonFx">
       <HintPath>..\lib\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -47,7 +47,7 @@
     <Compile Include="Tests.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="InvalidJson.cs" />
-    <Compile Include="Merger.cs" />
+    <Compile Include="MergerTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -55,6 +55,7 @@
     <EmbeddedResource Include="JSON\Arrays.json" />
     <EmbeddedResource Include="JSON\Firewall.json" />
     <EmbeddedResource Include="JSON\default.conf.json" />
+    <EmbeddedResource Include="JSON\Foods.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JsonConfig\JsonConfig.csproj">

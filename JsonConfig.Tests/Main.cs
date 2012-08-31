@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using JsonFx.Json;
 
+using JsonConfig;
 
 namespace JsonConfig.Tests
 {
+
 /* kept for debugging reasons */
 	public static class MainClass
 	{
 		public static void Main (string[] args)
 		{
-			var c = new Config ();
+			Console.WriteLine (Config.Default.Sample);
+			Console.WriteLine (Config.User.Sample);
 		}
 		public static void PrintDictionary (IDictionary<string, object> dictionary, uint spacecount = 0)
 		{

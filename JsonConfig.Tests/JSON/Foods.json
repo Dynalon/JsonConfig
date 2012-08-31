@@ -1,0 +1,18 @@
+{
+	"Fruits": {
+		"Types":
+			[
+			{ "Type": "Apple", "PricePerTen": 5 },
+			{ "Type": "Peach", "PricePerTen": 4 },
+			{ "Type": "Pear", "PricePerTen": 3 }
+		]
+	},
+	"Vegetables": {
+		"Types":
+		[
+			{ "Type": "Tomato", "PricePerTen": 1 },
+			{ "Type": "Cucumber", "PricePerTen": 5 },
+			{ "Type": "Pickle", "PricePerTen": 2 }
+		]
+	}
+}

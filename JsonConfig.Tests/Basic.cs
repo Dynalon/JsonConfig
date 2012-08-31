@@ -6,6 +6,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
+using JsonConfig;
+
 namespace JsonConfig.Tests
 {
 	[TestFixture]
@@ -15,8 +17,8 @@ namespace JsonConfig.Tests
 		{
 			// read in all our JSON objects
 			var jsonTests = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("JsonConfig.Tests.JSON." + name + ".json");
-			var sReader = new StreamReader (jsonTests);	
-			return Config.ParseJson (sReader.ReadToEnd ());
+			var sReader = new StreamReader (jsonTests);
+			return Config.ApplyJson (sReader.ReadToEnd (), new ConfigObject ());
 		}
 		
 		[SetUp]

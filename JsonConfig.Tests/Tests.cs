@@ -42,6 +42,17 @@ namespace JsonConfig.Tests
 			Assert.AreEqual (fruitList.Count (f => f == "apple"), 2);
 			Assert.That (fruitList.Contains ("coconut"));
 		}
+
+		[Test]
+		public void CanAccessNonExistantField ()
+		{
+			dynamic parsed = GetUUT("Arrays");
+			dynamic merged = Merger.Merge (parsed.Fruit1, parsed.Fruit2);
+
+			Assert.That (merged.field.not.exist.ToString () == null);
+			Assert.That (string.IsNullOrEmpty (merged.thisfield.does.just.not.exist) == true);
+
+		}
 		[Test]
 		public void ArrayWithEmptyArray ()
 		{
@@ -60,8 +71,7 @@ namespace JsonConfig.Tests
 			dynamic parsed = GetUUT("Arrays");
 			dynamic merged = Merger.Merge (parsed.Coords1, parsed.Coords2);
 			
-			var coordList = (ICollection<dynamic>) merged;
-			Assert.AreEqual (2, coordList.Count);
+			Assert.AreEqual (2, merged.Pairs.Length);
 		}
 		
 		[Test]
@@ -86,26 +96,29 @@ namespace JsonConfig.Tests
 		[Test]
 		public void DefaultConfigFound ()
 		{
-			var c = new Config ();
-			Assert.IsNotNull (c.DefaultConfig);
-			Assert.That (c.DefaultConfig.Default == "found");
+			Assert.IsNotNull (Config.Default);
+			Assert.That (Config.Default.Sample == "found");
 		}
 		[Test]
-		public void UserConfigJsonMerge ()
+		public void ComplexTypeWithArray ()
 		{
-			var user_json = @"{ ""Default"" : ""blubb"" }";
-			var c = new Config ();
-			dynamic conf = c.ApplyJson (user_json);
-			
-			Assert.That (conf.Default == "blubb");
+			dynamic parsed = GetUUT ("Foods");
+			dynamic fruit = parsed.Fruits;
+			dynamic vegetables = parsed.Vegetables;
+
+			dynamic result = Merger.Merge (fruit, vegetables);
+
+			Assert.AreEqual (6, result.Types.Length);
+			Assert.IsInstanceOfType (typeof(ConfigObject), result);
+			Assert.IsInstanceOfType (typeof(ConfigObject[]), result.Types);
 		}
-		[Test]
-		public void UserConfigFromFile ()
-		{
-			var c = new Config ();
-			var user_config = c.ApplyJsonFromFile ("../../JSON/Arrays.json");
-		
-			Assert.That (user_config.Default == "arrays");
-		}
+//		[Test]
+//		public void UserConfigFromFile ()
+//		{
+//			var c = new Config ();
+//			var user_config = c.ApplyJsonFromFile ("../../JSON/Arrays.json");
+//		
+//			Assert.That (user_config.Default == "arrays");
+//		}
 	}
 }

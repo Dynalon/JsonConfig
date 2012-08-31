@@ -38,7 +38,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="nunit.framework" />
     <Reference Include="JsonFx">
       <HintPath>..\lib\JsonFx.dll</HintPath>
     </Reference>
@@ -47,6 +46,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Merger.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="ConfigObjects.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

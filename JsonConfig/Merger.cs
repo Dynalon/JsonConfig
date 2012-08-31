@@ -9,41 +9,59 @@ namespace JsonConfig
 	public static class Merger
 	{
 		/// <summary>
-		/// Merge the specified obj1 and obj2, where obj1 has precendence.
+		/// Merge the specified obj2 and obj1, where obj1 has precendence and
+		/// overrules obj2 if necessary.
 		/// </summary>
-		/// <param name='obj1'>
-		/// Obj1. If null, result will be null.
-		/// </param>
-		/// <param name='obj2'>
-		/// Obj2. If null, result will be Obj1
-		/// </param>
 		/// <exception cref='TypeMissmatchException'>
 		/// Is thrown when the type missmatch exception.
 		/// </exception>
-		public static dynamic Merge (dynamic obj1, dynamic obj2)
+		public static dynamic Merge (dynamic m_obj1, dynamic m_obj2)
 		{
+			dynamic obj1 = m_obj1;
+			dynamic obj2 = m_obj2;
+
+			// make sure we only deal with ConfigObject but not ExpandoObject as currently
+			// return from JsonFX
+			if (obj1 is ExpandoObject) obj1 = ConfigObject.FromExpando (obj1);
+			if (obj2 is ExpandoObject) obj2 = ConfigObject.FromExpando (obj2);
+
+			// if both objects are NullExceptionPreventer, return a ConfigObject so the
+			// user gets an "Empty" ConfigObject
+			if (obj1 is NullExceptionPreventer && obj2 is NullExceptionPreventer)
+				return new ConfigObject ();
+
+			// if any object is of NullExceptionPreventer, the other object gets precedence / overruling
+			if (obj1 is NullExceptionPreventer && obj2 is ConfigObject)
+				return obj2;
+			if (obj2 is NullExceptionPreventer && obj1 is ConfigObject)
+				return obj1;
+
 			// handle what happens if one of the args is null
-			if (obj1 == null) return null;
+			if (obj1 == null && obj2 == null)
+				return new ConfigObject ();
+
 			if (obj2 == null) return obj1;
-		
+			if (obj1 == null) return obj2;
+
 			if (obj1.GetType () != obj2.GetType ())	
 				throw new TypeMissmatchException ();
 			
-			// ExpandoObject implements dictionary
-			// and changes in the dictionary WILL REFLECT back to the
-			var dict1 = obj1 as IDictionary<string, object>;
-			var dict2 = obj2 as IDictionary<string, object>;
+			// ExpandoObject implements IDictionary
+			// and changes in the dictionary WILL REFLECT back to the object
+			// TODO ConfigObject however only implements Dictionary
+			var dict1 = (IDictionary<string, object>) (obj1);
+			var dict2 = (IDictionary<string, object>) (obj2);
 
-			dynamic result = new ExpandoObject ();
-			var rdict = result as IDictionary<string, object>;
+			dynamic result = new ConfigObject ();
+			var rdict = (IDictionary<string, object>) result;
 			
 			// first, copy all non colliding keys over
 	        foreach (var kvp in dict1)
 				if (!dict2.Keys.Contains (kvp.Key))
-					rdict.Add (kvp);
+					rdict.Add (kvp.Key, kvp.Value);
 	        foreach (var kvp in dict2)
 				if (!dict1.Keys.Contains (kvp.Key))
-					rdict.Add (kvp);
+					rdict.Add (kvp.Key, kvp.Value);
 		
 			// now handle the colliding keys	
 			foreach (var kvp1 in dict1) {
@@ -90,12 +108,49 @@ namespace JsonConfig
 			}
 			return result;
 		}
+		/// <summary>
+		/// Merges the multiple ConfigObjects, accepts infinite list of arguments
+		/// First named objects overrule preceeding objects.
+		/// </summary>
+		/// <returns>
+		/// The merged ConfigObject.
+		/// </returns>
+		/// <param name='objects'>
+		/// List of objects which are to be merged.
+		/// </param>
+		public static dynamic MergeMultiple (params object[] objects)
+		{
+			if (objects.Length == 1)
+				return objects[0];
+
+			else if (objects.Length == 2)
+				return Merge (objects[0], objects[1]);
+
+			else {
+				object head = objects.First ();
+				object[] tail = objects.Skip (1).Take (objects.Length - 1).ToArray ();
+
+				return Merge (head, MergeMultiple (tail));
+			}
+		}
 		public static dynamic CollectionMerge (dynamic obj1, dynamic obj2)
 		{
 			var x = new ArrayList ();
 			x.AddRange (obj1);
 			x.AddRange (obj2);
-			return x.ToArray (obj1.GetType ().GetElementType ());
+
+			var obj1_type = obj1.GetType ().GetElementType ();
+			if (obj1_type == typeof (ExpandoObject)) {
+				List<ConfigObject> l = new List<ConfigObject> ();
+				foreach (ExpandoObject elem in x) {
+					l.Add (ConfigObject.FromExpando(elem));
+				}
+				return l.ToArray ();
+			}
+			else if (obj1_type == typeof (ConfigObject)) 
+				return x.ToArray (typeof(ConfigObject));
+			else
+				return x.ToArray (obj1_type);
 		}
 	}
 	/// <summary>

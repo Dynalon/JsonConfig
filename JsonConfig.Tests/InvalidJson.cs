@@ -10,16 +10,16 @@ namespace JsonConfig.Tests
 		[ExpectedException (typeof(JsonFx.Serialization.DeserializationException))]
 		public void EvidentlyInvalidJson ()
 		{
-			var c = new Config ();
-			c.ApplyJson ("jibberisch");
+			dynamic scope = Config.Scope;
+			scope.ApplyJson ("jibberisch");
 		}
 		[Test]
 		[ExpectedException (typeof(JsonFx.Serialization.DeserializationException))]
 		public void MissingObjectIdentifier()
 		{	
-			var c = new Config ();
+			dynamic scope = Config.Scope;
 			var invalid_json = @" { [1, 2, 3] }";	
-			c.ApplyJson (invalid_json);
+			scope.ApplyJson (invalid_json);
 		}
 	}
 }

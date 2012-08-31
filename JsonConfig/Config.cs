@@ -12,61 +12,65 @@ using System.Text.RegularExpressions;
 namespace JsonConfig 
 {
 	public class Config {
-		public dynamic DefaultConfig = null;
-		public dynamic UserConfig = null;
-	
-		///<summary>
-		///	scope config will represent the current, actual config
-		/// after merging/inheriting from Default & UserConfig
-		/// </summary>
-		public dynamic ScopeConfig = null; 
-		
-		public Config ()
-		{
-			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
-			DefaultConfig = getDefaultConfig (assembly);
-			
-			// scan for default config
-			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-			var userConfigFileName = "settings.conf";
-			var userConfigFullPath = Path.Combine (executionPath, userConfigFileName);
-			if (File.Exists (userConfigFullPath)) {
-				UserConfig = Config.ParseJson (File.ReadAllText (userConfigFullPath));
-				WatchConfig (executionPath, userConfigFileName);
-				ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
+		public static dynamic Default = new ConfigObject ();
+		public static dynamic User = new ConfigObject ();
+
+		public static dynamic Scope {
+			get {
+				return Merger.Merge (User, Default);
 			}
 		}
-		public void WatchConfig (string path, string fileName)
+
+		static Config ()
 		{
-			var watcher = new FileSystemWatcher (path, fileName);
+			// static C'tor, run once to check for compiled/embedded config
+
+			// TODO scan ALL linked assemblies and merge their configs
+			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
+			Default = GetDefaultConfig (assembly);
+
+			// User config (provided through a settings.conf file)
+			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
+			var userConfigFileName = "settings.conf";
+
+			var d = new DirectoryInfo (executionPath);
+			var userConfig = (from FileInfo fi in d.GetFiles ()
+				where (
+					fi.FullName.EndsWith (userConfigFileName + ".conf") ||
+					fi.FullName.EndsWith (userConfigFileName + ".json") ||
+					fi.FullName.EndsWith (userConfigFileName + ".conf.json") ||
+					fi.FullName.EndsWith (userConfigFileName + ".json.conf")
+				) select fi).FirstOrDefault ();
+
+			if (userConfig != null) {
+				User = Config.ParseJson (File.ReadAllText (userConfig.FullName));
+				WatchUserConfig (userConfig);
+			}
+			else {
+				User = new NullExceptionPreventer ();
+			}
+		}
+		public static void WatchUserConfig (FileInfo info)
+		{
+			var watcher = new FileSystemWatcher (info.FullName);
 			watcher.NotifyFilter = NotifyFilters.LastWrite;
 			watcher.Changed += delegate {
-				var fullPath = Path.Combine (path, fileName);
-				UserConfig = ParseJson (File.ReadAllText (fullPath));
-				ScopeConfig = Merger.Merge (UserConfig, DefaultConfig);
+				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
 			};
 			watcher.EnableRaisingEvents = true;	
 		}
-		public dynamic ApplyJsonFromFile (string overlayConfigPath, bool applyToScope = true) 
+		public static ConfigObject ApplyJsonFromFile (FileInfo file, ConfigObject config)
 		{
-			var overlay_json = File.ReadAllText (overlayConfigPath);
+			var overlay_json = File.ReadAllText (file.FullName);
 			dynamic overlay_config = ParseJson (overlay_json);
-
-			var merged = Merger.Merge (overlay_config, ScopeConfig);	
-			if (applyToScope)
-				ScopeConfig = merged;
-			return merged;
+			return Merger.Merge (overlay_config, config);
 		}
-		
-		public dynamic ApplyJson (string jsonConfig, bool applyToScope = true)
+		public static ConfigObject ApplyJson (string json, ConfigObject config)
 		{
-			dynamic jsonconfig = Config.ParseJson (jsonConfig);
-			var merged = Merger.Merge (jsonconfig, ScopeConfig);
-			if (applyToScope)
-				ScopeConfig = merged;
-			return merged;
+			dynamic parsed = ParseJson (json);
+			return Merger.Merge (parsed, config);
 		}
-		public static dynamic ParseJson (string json)
+		public static ExpandoObject ParseJson (string json)
 		{
 			var lines = json.Split (new char[] {'\n'});
 			// remove lines that start with a dash # character 
@@ -80,14 +84,14 @@ namespace JsonConfig
 			dynamic parsed = json_reader.Read (filtered_json);
 			return parsed;
 		}
-		protected dynamic getDefaultConfig (Assembly assembly)
+		protected static dynamic GetDefaultConfig (Assembly assembly)
 		{
-			var dconf_json = scanForDefaultConfig (assembly);
+			var dconf_json = ScanForDefaultConfig (assembly);
 			if (dconf_json == null)
 				return null;
 			return ParseJson (dconf_json);
 		}
-		protected string scanForDefaultConfig(Assembly assembly)
+		protected static string ScanForDefaultConfig(Assembly assembly)
 		{
 			if(assembly == null)
 				assembly = System.Reflection.Assembly.GetEntryAssembly ();
@@ -106,18 +110,5 @@ namespace JsonConfig
 			string default_json = new StreamReader(stream).ReadToEnd ();
 			return default_json;
 		}
-		public bool ScopeMemberExists (string name)
-		{
-			return MemberExists (ScopeConfig, name);
-		}
-		// TODO have this as Enumerator/Indexer MemberExists(
-		public static bool MemberExists (ExpandoObject d, string name)
-		{
-			var dict = d as IDictionary<string, object>;
-			if (dict.ContainsKey (name))
-				return true;
-			return false;
-		}
-		
 	}
 }
