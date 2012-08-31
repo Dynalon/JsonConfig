@@ -50,14 +50,15 @@ namespace JsonConfig
 				User = new NullExceptionPreventer ();
 			}
 		}
+		protected static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
-			var watcher = new FileSystemWatcher (info.FullName);
-			watcher.NotifyFilter = NotifyFilters.LastWrite;
-			watcher.Changed += delegate {
+			userConfigWatcher = new FileSystemWatcher (info.FullName);
+			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
+			userConfigWatcher.Changed += delegate {
 				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
 			};
-			watcher.EnableRaisingEvents = true;	
+			userConfigWatcher.EnableRaisingEvents = true;
 		}
 		public static ConfigObject ApplyJsonFromFile (FileInfo file, ConfigObject config)
 		{
@@ -83,6 +84,21 @@ namespace JsonConfig
 			var json_reader = new JsonReader ();
 			dynamic parsed = json_reader.Read (filtered_json);
 			return parsed;
+		}
+		// overrides any default config specified in default.conf
+		public static void SetDefaultConfig (dynamic config)
+		{
+			Default = config;
+		}
+		public static void SetUserConfig (ConfigObject config)
+		{
+			User = config;
+			// disable the watcher
+			if (userConfigWatcher != null) {
+				userConfigWatcher.EnableRaisingEvents = false;
+				userConfigWatcher.Dispose ();
+				userConfigWatcher = null;
+			}
 		}
 		protected static dynamic GetDefaultConfig (Assembly assembly)
 		{

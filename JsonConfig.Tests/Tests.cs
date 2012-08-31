@@ -112,13 +112,19 @@ namespace JsonConfig.Tests
 			Assert.IsInstanceOfType (typeof(ConfigObject), result);
 			Assert.IsInstanceOfType (typeof(ConfigObject[]), result.Types);
 		}
-//		[Test]
-//		public void UserConfigFromFile ()
-//		{
-//			var c = new Config ();
-//			var user_config = c.ApplyJsonFromFile ("../../JSON/Arrays.json");
-//		
-//			Assert.That (user_config.Default == "arrays");
-//		}
+		[Test]
+		public void ManualDefaultAndUserConfig ()
+		{
+			// TODO this test fails because we try to merge an ExpandoObject with and ConfigObject
+			dynamic parsed = GetUUT ("Foods");
+
+			Config.SetUserConfig (ConfigObject.FromExpando (parsed.Fruits));
+			Config.SetDefaultConfig (ConfigObject.FromExpando (parsed.Vegetables));
+
+			dynamic scope = Config.Scope;
+			scope = scope.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}");
+			Assert.AreEqual (7, scope.Types.Length);
+
+		}
 	}
 }
