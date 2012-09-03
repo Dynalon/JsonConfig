@@ -138,10 +138,15 @@ namespace JsonConfig.Tests
 			dynamic modules_object = modules.EnabledModulesObject;
 			Assert.AreNotEqual (null, modules_object.Module1);
 			Assert.AreNotEqual (null, modules_object.Module2);
+			
+			Assert.That (modules_object.Module1 == true);
+			Assert.That (!modules_object.Module1 == false);
+
 			Assert.That (modules_object.Module2 == false);
 
 			// tricky part: NonExistantModule is not defined in the json but should be false anyways
 			Assert.That (modules_object.NonExistantModule == false);
+			Assert.That (!modules_object.NonExistantModule == true);
 			Assert.That (modules_object.NonExistantModule.Nested.Field.That.Doesnt.Exist == false);
 		}
 	}

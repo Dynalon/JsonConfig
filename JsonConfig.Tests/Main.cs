@@ -13,8 +13,7 @@ namespace JsonConfig.Tests
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine (Config.Default.Sample);
-			Console.WriteLine (Config.User.Sample);
+
 		}
 		public static void PrintDictionary (IDictionary<string, object> dictionary, uint spacecount = 0)
 		{
