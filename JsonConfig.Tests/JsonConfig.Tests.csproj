@@ -48,6 +48,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="InvalidJson.cs" />
     <Compile Include="MergerTests.cs" />
+    <Compile Include="TypeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -56,6 +57,8 @@
     <EmbeddedResource Include="JSON\Firewall.json" />
     <EmbeddedResource Include="JSON\default.conf.json" />
     <EmbeddedResource Include="JSON\Foods.json" />
+    <EmbeddedResource Include="JSON\Types.json" />
+    <EmbeddedResource Include="JSON\EnabledModules.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JsonConfig\JsonConfig.csproj">

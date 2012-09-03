@@ -1,0 +1,27 @@
+{
+	"Foo" : "bar",
+	"NestedArray" : [
+		{ "Foo" : "bar" },	
+		{ "Foo" : "bar" },	
+		{ "Foo" : "bar" },	
+		{ "Foo" : "bar" }	
+	],
+	"DoubleNestedArray" : [
+		{
+			"One" : [
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" }
+			]
+		},
+		{
+			"Two" : [
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" },	
+				{ "Foo" : "bar" }
+			]
+		}
+	]
+}

@@ -1,0 +1,12 @@
+
+{
+	"EnabledModulesArray": [
+		"Module1",
+		"Module2"
+	],
+	"EnabledModulesObject" : {
+		"Module1" : true,
+		"Module2" : false
+	}
+	
+}

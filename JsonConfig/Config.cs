@@ -71,7 +71,7 @@ namespace JsonConfig
 			dynamic parsed = ParseJson (json);
 			return Merger.Merge (parsed, config);
 		}
-		public static ExpandoObject ParseJson (string json)
+		public static ConfigObject ParseJson (string json)
 		{
 			var lines = json.Split (new char[] {'\n'});
 			// remove lines that start with a dash # character 
@@ -83,7 +83,8 @@ namespace JsonConfig
 			
 			var json_reader = new JsonReader ();
 			dynamic parsed = json_reader.Read (filtered_json);
-			return parsed;
+			// convert the ExpandoObject to ConfigObject before returning
+			return ConfigObject.FromExpando (parsed);
 		}
 		// overrides any default config specified in default.conf
 		public static void SetDefaultConfig (dynamic config)

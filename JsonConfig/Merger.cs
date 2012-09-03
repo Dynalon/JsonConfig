@@ -46,9 +46,7 @@ namespace JsonConfig
 			if (obj1.GetType () != obj2.GetType ())	
 				throw new TypeMissmatchException ();
 			
-			// ExpandoObject implements IDictionary
-			// and changes in the dictionary WILL REFLECT back to the object
-			// TODO ConfigObject however only implements Dictionary
+			// changes in the dictionary WILL REFLECT back to the object
 			var dict1 = (IDictionary<string, object>) (obj1);
 			var dict2 = (IDictionary<string, object>) (obj2);
 
@@ -82,14 +80,14 @@ namespace JsonConfig
 				if (type1 != type2)
 					throw new TypeMissmatchException ();
 
-				if (value1 is ExpandoObject[]) {
+				if (value1 is ConfigObject[]) {
 					rdict[key] = CollectionMerge (value1, value2);
 					/*var d1 = val1 as IDictionary<string, object>;
 					var d2 = val2 as IDictionary<string, object>;
 					rdict[key] = CollectionMerge (val1, val2); */
 				}
-				else if (value1 is ExpandoObject) {
-					rdict[key] = Merge ((ExpandoObject) value1, (ExpandoObject) value2);
+				else if (value1 is ConfigObject) {
+					rdict[key] = Merge (value1, value2);
 				}
 				else if (value1 is string)
 				{
@@ -140,14 +138,7 @@ namespace JsonConfig
 			x.AddRange (obj2);
 
 			var obj1_type = obj1.GetType ().GetElementType ();
-			if (obj1_type == typeof (ExpandoObject)) {
-				List<ConfigObject> l = new List<ConfigObject> ();
-				foreach (ExpandoObject elem in x) {
-					l.Add (ConfigObject.FromExpando(elem));
-				}
-				return l.ToArray ();
-			}
-			else if (obj1_type == typeof (ConfigObject)) 
+			if (obj1_type == typeof (ConfigObject)) 
 				return x.ToArray (typeof(ConfigObject));
 			else
 				return x.ToArray (obj1_type);

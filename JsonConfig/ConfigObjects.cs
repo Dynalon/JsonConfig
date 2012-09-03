@@ -14,8 +14,23 @@ namespace JsonConfig
 			var c = new ConfigObject ();
 			var cdict = (IDictionary<string, object>) c;
 
+			// this is not complete. It will, however work for JsonFX ExpandoObjects
+			// which consits only of primitive types, ExpandoObject or ExpandoObject [] 
+			// but won't work for generic ExpandoObjects which might include collections etc.
 			foreach (var kvp in edict) {
-				cdict.Add (kvp.Key, kvp.Value);
+				// recursively convert and add ExpandoObjects
+				if (kvp.Value is ExpandoObject) {
+					cdict.Add (kvp.Key, FromExpando ((ExpandoObject) kvp.Value));
+				}
+				else if (kvp.Value is ExpandoObject[]) {
+					var config_objects = new List<ConfigObject> ();
+					foreach (var ex in ((ExpandoObject[]) kvp.Value)) {
+						config_objects.Add (FromExpando (ex));
+					}
+					cdict.Add (kvp.Key, config_objects.ToArray ());
+				}
+				else
+					cdict.Add (kvp.Key, kvp.Value);
 			}
 			return c;
 		}
@@ -160,6 +175,7 @@ namespace JsonConfig
 			result = new NullExceptionPreventer ();
 			return true;
 		}
+		// cast to string will be null
 		public static implicit operator string (NullExceptionPreventer nep) 
 		{
 			return null;
@@ -167,6 +183,11 @@ namespace JsonConfig
 		public override string ToString ()
 		{
 			return null;
+		}
+		// cast to bool will always be false
+		public static implicit operator bool (NullExceptionPreventer nep)
+		{
+			return false;
 		}
 	}
 }

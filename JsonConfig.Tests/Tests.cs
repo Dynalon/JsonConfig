@@ -115,16 +115,34 @@ namespace JsonConfig.Tests
 		[Test]
 		public void ManualDefaultAndUserConfig ()
 		{
-			// TODO this test fails because we try to merge an ExpandoObject with and ConfigObject
 			dynamic parsed = GetUUT ("Foods");
 
-			Config.SetUserConfig (ConfigObject.FromExpando (parsed.Fruits));
-			Config.SetDefaultConfig (ConfigObject.FromExpando (parsed.Vegetables));
+			Config.SetUserConfig (parsed.Fruits);
+			Config.SetDefaultConfig (parsed.Vegetables);
+
+			Assert.IsInstanceOfType (typeof(ConfigObject), Config.User);
+			Assert.IsInstanceOfType (typeof(ConfigObject), Config.Default);
 
 			dynamic scope = Config.Scope;
 			scope = scope.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}");
 			Assert.AreEqual (7, scope.Types.Length);
+		}
+		[Test]
+		public void EnabledModulesTest ()
+		{
+			// classical module scenario: user specifies what modules are to be loaded
 
+			dynamic modules = GetUUT ("EnabledModules");
+
+			// method one : use an object with each module name as key, and value true/false
+			dynamic modules_object = modules.EnabledModulesObject;
+			Assert.AreNotEqual (null, modules_object.Module1);
+			Assert.AreNotEqual (null, modules_object.Module2);
+			Assert.That (modules_object.Module2 == false);
+
+			// tricky part: NonExistantModule is not defined in the json but should be false anyways
+			Assert.That (modules_object.NonExistantModule == false);
+			Assert.That (modules_object.NonExistantModule.Nested.Field.That.Doesnt.Exist == false);
 		}
 	}
 }
