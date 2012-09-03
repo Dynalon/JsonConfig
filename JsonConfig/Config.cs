@@ -31,7 +31,7 @@ namespace JsonConfig
 
 			// User config (provided through a settings.conf file)
 			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-			var userConfigFileName = "settings.conf";
+			var userConfigFileName = "settings";
 
 			var d = new DirectoryInfo (executionPath);
 			var userConfig = (from FileInfo fi in d.GetFiles ()
@@ -53,7 +53,7 @@ namespace JsonConfig
 		protected static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
-			userConfigWatcher = new FileSystemWatcher (info.FullName);
+			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
 				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
