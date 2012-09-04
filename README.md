@@ -153,3 +153,19 @@ values will not throw a NullPointer exception:
 		// will most likely be run all the times
 	}
 
+The "magic" allows you to cast a not-yet existing field to common types, which will then have empty or default values:
+
+	foreach (string name in Config.Scope.NonExistantField as string[]) {
+		// instead of being cast to null, if a non-existing field is cast to string[] it
+		// will just be an empty array: string[] { }
+		Console.WriteLine (name);
+	}
+
+	// works for nullable types, too. Nullable types will
+	// cast to null if not exsisting in the config.
+	var processFiles = (bool?) Config.Scope.ProcessFiles;
+	if (processFiles != null) {
+		// will only be run if ProcessFiles is present in the config
+		DoSomethingWithDirectory (processFiles);
+	}
+
