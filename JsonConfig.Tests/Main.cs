@@ -13,6 +13,12 @@ namespace JsonConfig.Tests
 	{
 		public static void Main (string[] args)
 		{
+			dynamic s = JsonConfig.Tests.BaseTest.GetUUT ("EnabledModules");
+			string[] mods = s.EnabledModulesArray;
+
+			string[] blubb = s.Doesnot;
+			int[] bblubb = s.Doesnot;
+
 
 		}
 		public static void PrintDictionary (IDictionary<string, object> dictionary, uint spacecount = 0)

@@ -77,6 +77,24 @@ namespace JsonConfig.Tests
 			Assert.IsInstanceOfType (typeof(int), c.X);
 			Assert.AreEqual (1, c.X);
 		}
+		[Test]
+		public void CastNonExistantFields ()
+		{
+			int x = Config.Scope.NonExistant;
+			Assert.AreEqual (0, x);
+
+			int[] xarray = Config.Scope.NonExistant;
+			Assert.AreEqual (0, xarray.Length);
+
+			string[] sarray = Config.Scope.NonExistant;
+			Assert.AreEqual (0, sarray.Length);
+
+			bool b = Config.Scope.NonExistant;
+			Assert.AreEqual (false, b);
+
+			bool? bn = Config.Scope.NonExistant;
+			Assert.AreEqual (null, bn);
+		}
 	}
 }
 
