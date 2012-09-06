@@ -15,11 +15,22 @@ namespace JsonConfig
 		public static dynamic Default = new ConfigObject ();
 		public static dynamic User = new ConfigObject ();
 
+		/// <summary>
+		/// Gets the scope. The Scope is calculated as a Merge of the User and Default settings.
+		/// Once the Scope is retrieved for the first time, the merge takes place, as well as when the User
+		/// setting gets updated.
+		/// </summary>
+		/// <value>
+		/// The scope.
+		/// </value>
 		public static dynamic Scope {
 			get {
-				return Merger.Merge (User, Default);
+				if (scope == null)
+					scope = Merger.Merge (User, Default);
+				return scope;
 			}
 		}
+		protected static dynamic scope = null;
 
 		static Config ()
 		{
@@ -57,6 +68,8 @@ namespace JsonConfig
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
 				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
+				// update the scope config after merge
+				scope = Merger.Merge (User, Default);
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
