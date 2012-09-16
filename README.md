@@ -67,7 +67,7 @@ application.
 	}
 
 The settings.conf and the default.conf are then merged in a clever
-way and provided via the *Scope* configuration.
+way and provided via the *Global* configuration.
 
 	public void PrintInfo () {
 		// will result in apple, banana, pear 
@@ -78,10 +78,10 @@ way and provided via the *Scope* configuration.
 		foreach (var fruit in Config.User.Fruits)
 			Console.WriteLine (fruit);
 
-		// access the Scope, which is a merge of Default
+		// access the Global scope, which is a merge of Default
 		// and User configuration
 		// will result in apple, banana, pear, melon, peach
-		foreach (var fruit in Config.Scope.Fruits)
+		foreach (var fruit in Config.Global.Fruits)
 			Console.WriteLine (fruit);
 
 	}
@@ -116,12 +116,12 @@ Above configuration could be accessed via:
 	[...]
 
 	public void StartWebserver () {
-		// access via Config.Scope
-		string serverName = Config.Scope.ServerProgramName;
-		bool caching = Config.Scope.EnableCaching;
-		int[] listenPorts = Config.Scope.ListenPorts;
+		// access via Config.Global
+		string serverName = Config.Global.ServerProgramName;
+		bool caching = Config.Global.EnableCaching;
+		int[] listenPorts = Config.Global.ListenPorts;
 
-		foreach (dynamic website in Config.Scope.Websites) {
+		foreach (dynamic website in Config.Global.Websites) {
 			StartNewVhost (website.Path, website.Domain, website.Contact);
 		}
 	}
@@ -137,25 +137,25 @@ values will not throw a NullPointer exception:
 
 	// there is no need to have LoadedModules OR HttpServer in your
 	// default.conf, if missing this will just evaluate to false
-	if (Config.Scope.LoadedModules.HttpServer) {
+	if (Config.Global.LoadedModules.HttpServer) {
 		// start HttpServer
 	}
 
 	// more drastic example, its safe to write
-	if (Config.Scope.nonexistant.field.that.never.will.be.given) {
+	if (Config.Global.nonexistant.field.that.never.will.be.given) {
 		// this will never be run unless you create that structure in your
 		// config files
 	}
 
 	// when the configuration value is cast to string, it will be null if not
 	// given
-	if (string.IsNullOrEmpty (Config.Scope.some.nonexistant.nested.field)) {
+	if (string.IsNullOrEmpty (Config.Global.some.nonexistant.nested.field)) {
 		// will most likely be run all the times
 	}
 
 The "magic" allows you to cast a not-yet existing field to common types, which will then have empty or default values:
 
-	foreach (string name in Config.Scope.NonExistantField as string[]) {
+	foreach (string name in Config.Global.NonExistantField as string[]) {
 		// instead of being cast to null, if a non-existing field is cast to string[] it
 		// will just be an empty array: string[] { }
 		Console.WriteLine (name);
@@ -163,7 +163,7 @@ The "magic" allows you to cast a not-yet existing field to common types, which w
 
 	// works for nullable types, too. Nullable types will
 	// cast to null if not exsisting in the config.
-	var processFiles = (bool?) Config.Scope.ProcessFiles;
+	var processFiles = (bool?) Config.Global.ProcessFiles;
 	if (processFiles != null) {
 		// will only be run if ProcessFiles is present in the config
 		DoSomethingWithDirectory (processFiles);
