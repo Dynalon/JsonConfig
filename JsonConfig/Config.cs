@@ -21,16 +21,16 @@ namespace JsonConfig
 			}
 		}
 
-		protected static dynamic scope;
-		public static dynamic Scope {
+		protected static dynamic global_config;
+		public static dynamic Global {
 			get {
-				if (scope == null) {
-					scope = MergedConfig;
+				if (global_config == null) {
+					global_config = MergedConfig;
 				}
-				return scope;
+				return global_config;
 			}
 			set {
-				scope = Merger.Merge (value, MergedConfig);
+				global_config = Merger.Merge (value, MergedConfig);
 			}
 		}
 	
@@ -40,7 +40,7 @@ namespace JsonConfig
 		/// after GetCurrentScope() is called, are not applied in the returned instance.
 		/// </summary>
 		static ConfigObject GetCurrentScope () {
-			 return Scope.Clone ();
+			 return Global.Clone ();
 		}
 
 		static Config ()

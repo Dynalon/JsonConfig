@@ -123,7 +123,7 @@ namespace JsonConfig.Tests
 			Assert.IsInstanceOfType (typeof(ConfigObject), Config.User);
 			Assert.IsInstanceOfType (typeof(ConfigObject), Config.Default);
 
-			dynamic scope = Config.Scope;
+			dynamic scope = Config.Global;
 			scope = scope.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}");
 			Assert.AreEqual (7, scope.Types.Length);
 		}
