@@ -15,10 +15,32 @@ namespace JsonConfig
 		public static dynamic Default = new ConfigObject ();
 		public static dynamic User = new ConfigObject ();
 
-		public static dynamic Scope {
+		public static dynamic MergedConfig {
 			get {
 				return Merger.Merge (User, Default);
 			}
+		}
+
+		protected static dynamic scope;
+		public static dynamic Scope {
+			get {
+				if (scope == null) {
+					scope = MergedConfig;
+				}
+				return scope;
+			}
+			set {
+				scope = Merger.Merge (value, MergedConfig);
+			}
+		}
+	
+		/// <summary>
+		/// Gets a ConfigObject that represents the current configuration. Since it is 
+		/// a cloned copy, changes to the underlying configuration files that are done
+		/// after GetCurrentScope() is called, are not applied in the returned instance.
+		/// </summary>
+		static ConfigObject GetCurrentScope () {
+			 return Scope.Clone ();
 		}
 
 		static Config ()

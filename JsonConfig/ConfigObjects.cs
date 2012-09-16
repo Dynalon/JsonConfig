@@ -5,7 +5,7 @@ using System.IO;
 
 namespace JsonConfig
 {
-	public class ConfigObject : DynamicObject, IDictionary<string, object>
+	public class ConfigObject : DynamicObject, IDictionary<string, object>, ICloneable
 	{
 		internal Dictionary<string, object> members = new Dictionary<string, object> ();
 		public static ConfigObject FromExpando (ExpandoObject e)
@@ -166,6 +166,15 @@ namespace JsonConfig
 		{
 			return members.TryGetValue (key, out value);
 		}
+
+		#region ICloneable implementation
+
+		object ICloneable.Clone ()
+		{
+			return Merger.Merge (new ConfigObject (), this);
+		}
+
+		#endregion
 		#endregion
 	}
 
