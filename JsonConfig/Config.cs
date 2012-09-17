@@ -39,7 +39,7 @@ namespace JsonConfig
 		/// a cloned copy, changes to the underlying configuration files that are done
 		/// after GetCurrentScope() is called, are not applied in the returned instance.
 		/// </summary>
-		static ConfigObject GetCurrentScope () {
+		public static ConfigObject GetCurrentScope () {
 			 return Global.Clone ();
 		}
 
