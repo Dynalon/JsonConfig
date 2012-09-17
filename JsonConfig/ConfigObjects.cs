@@ -5,7 +5,7 @@ using System.IO;
 
 namespace JsonConfig
 {
-	public class ConfigObject : DynamicObject, IDictionary<string, object>, ICloneable
+	public class ConfigObject : DynamicObject, IDictionary<string, object>
 	{
 		internal Dictionary<string, object> members = new Dictionary<string, object> ();
 		public static ConfigObject FromExpando (ExpandoObject e)
@@ -51,10 +51,6 @@ namespace JsonConfig
 		public override bool TryInvokeMember (InvokeMemberBinder binder, object[] args, out object result)
 		{
 			// some special methods that should be in our dynamic object
-			if (binder.Name == "ApplyJson" && args.Length == 1 && args[0] is string) {
-				result = Config.ApplyJson ((string) args[0], this);
-				return true;
-			}
 			if (binder.Name == "ApplyJsonFromFile" && args.Length == 1 && args[0] is string) {
 				result = Config.ApplyJsonFromFile (new FileInfo ((string) args[0]), this);
 				return true;
@@ -63,11 +59,21 @@ namespace JsonConfig
 				result = Config.ApplyJsonFromFile ((FileInfo) args[0], this);
 				return true;
 			}
+			if (binder.Name == "Clone") {
+				result = this.Clone ();
+				return true;
+			}
 
 			// no other methods availabe, error
 			result = null;
 			return false;
 
+		}
+		public void ApplyJson (string json)
+		{
+			ConfigObject result = Config.ApplyJson (json, this);
+			// replace myself's members with the new ones
+			this.members = result.members;
 		}
 		public static implicit operator ConfigObject (ExpandoObject exp)
 		{
@@ -169,7 +175,7 @@ namespace JsonConfig
 
 		#region ICloneable implementation
 
-		object ICloneable.Clone ()
+		object Clone ()
 		{
 			return Merger.Merge (new ConfigObject (), this);
 		}

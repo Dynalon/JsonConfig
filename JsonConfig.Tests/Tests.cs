@@ -124,7 +124,7 @@ namespace JsonConfig.Tests
 			Assert.IsInstanceOfType (typeof(ConfigObject), Config.Default);
 
 			dynamic scope = Config.Global;
-			scope = scope.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}");
+			scope = Config.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}", scope);
 			Assert.AreEqual (7, scope.Types.Length);
 		}
 		[Test]
@@ -148,6 +148,15 @@ namespace JsonConfig.Tests
 			Assert.That (modules_object.NonExistantModule == false);
 			Assert.That (!modules_object.NonExistantModule == true);
 			Assert.That (modules_object.NonExistantModule.Nested.Field.That.Doesnt.Exist == false);
+		}
+		[Test]
+		public void CurrentScopeTest ()
+		{
+			dynamic c = Config.GetCurrentScope ();
+			c.ApplyJson (@"{ Foo : 1, Bar: ""blubb"" }");
+			Assert.AreEqual (1, c.Foo);
+			Assert.AreEqual ("blubb", c.Bar);
+
 		}
 	}
 }

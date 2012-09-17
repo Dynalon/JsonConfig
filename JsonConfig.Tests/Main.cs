@@ -13,12 +13,23 @@ namespace JsonConfig.Tests
 	{
 		public static void Main (string[] args)
 		{
-			dynamic s = JsonConfig.Tests.BaseTest.GetUUT ("EnabledModules");
-			string[] mods = s.EnabledModulesArray;
-
-			string[] blubb = s.Doesnot;
-			int[] bblubb = s.Doesnot;
-
+//			dynamic s = (DynamicObject) new ConfigObject ();
+//			dynamic t = (DynamicObject) new ConfigObject ();
+//			s.Foo = 7;
+//			t.Foo = 5;
+//
+//			IDictionary<string,object> dt = t.members;
+//			IDictionary<string,object> ds = s.members;
+//
+//			IValueInjecter inj = new ValueInjecter ();
+//
+//			Dictionary<string, object> sd = new Dictionary<string, object> ();
+//			Dictionary<string, object> td = new Dictionary<string, object> ();
+//			sd.Add ("foobar", 3);
+//			td.Add ("foobar" ,5);
+//			var x = inj.Inject (sd, td);
+//
+//			Console.WriteLine (x);
 
 		}
 		public static void PrintDictionary (IDictionary<string, object> dictionary, uint spacecount = 0)
