@@ -228,7 +228,15 @@ namespace JsonConfig
 		{
 			return new int[] { };
 		}
+		public static implicit operator long[] (NullExceptionPreventer nep)
+		{
+			return new long[] { };
+		}
 		public static implicit operator int (NullExceptionPreventer nep)
+		{
+			return 0;
+		}
+		public static implicit operator long (NullExceptionPreventer nep)
 		{
 			return 0;
 		}
@@ -238,6 +246,10 @@ namespace JsonConfig
 			return null;
 		}
 		public static implicit operator int? (NullExceptionPreventer nep)
+		{
+			return null;
+		}
+		public static implicit operator long? (NullExceptionPreventer nep)
 		{
 			return null;
 		}
