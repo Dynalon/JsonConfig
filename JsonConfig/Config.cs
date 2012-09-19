@@ -139,6 +139,7 @@ namespace JsonConfig
 			
 			var dconf_resource = res.Where (r =>
 					r.EndsWith ("default.conf", StringComparison.OrdinalIgnoreCase) ||
+					r.EndsWith ("default.json", StringComparison.OrdinalIgnoreCase) ||
 					r.EndsWith ("default.conf.json", StringComparison.OrdinalIgnoreCase))
 				.FirstOrDefault ();
 			
