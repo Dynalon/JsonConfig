@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace JsonConfig 
 {
-	public class Config {
+	public static class Config {
 		public static dynamic Default = new ConfigObject ();
 		public static dynamic User = new ConfigObject ();
 
@@ -21,7 +21,7 @@ namespace JsonConfig
 			}
 		}
 
-		protected static dynamic global_config;
+		private static dynamic global_config;
 		public static dynamic Global {
 			get {
 				if (global_config == null) {
@@ -42,6 +42,9 @@ namespace JsonConfig
 		public static ConfigObject GetCurrentScope () {
 			 return Global.Clone ();
 		}
+
+		public delegate void UserConfigFileChangedHandler ();
+		public static event UserConfigFileChangedHandler OnUserConfigFileChanged;
 
 		static Config ()
 		{
@@ -72,13 +75,21 @@ namespace JsonConfig
 				User = new NullExceptionPreventer ();
 			}
 		}
-		protected static FileSystemWatcher userConfigWatcher;
+		private static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
 				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
+				Console.WriteLine ("user configuration has changed, updating config information");
+
+				// invalidate the Global config, forcing a re-merge next time its accessed
+				global_config = null;
+
+				// trigger our event
+				if (OnUserConfigFileChanged != null)
+					OnUserConfigFileChanged ();
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
@@ -123,14 +134,14 @@ namespace JsonConfig
 				userConfigWatcher = null;
 			}
 		}
-		protected static dynamic GetDefaultConfig (Assembly assembly)
+		private static dynamic GetDefaultConfig (Assembly assembly)
 		{
 			var dconf_json = ScanForDefaultConfig (assembly);
 			if (dconf_json == null)
 				return null;
 			return ParseJson (dconf_json);
 		}
-		protected static string ScanForDefaultConfig(Assembly assembly)
+		private static string ScanForDefaultConfig(Assembly assembly)
 		{
 			if(assembly == null)
 				assembly = System.Reflection.Assembly.GetEntryAssembly ();
