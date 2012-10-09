@@ -40,7 +40,10 @@ namespace JsonConfig
 		/// after GetCurrentScope() is called, are not applied in the returned instance.
 		/// </summary>
 		public static ConfigObject GetCurrentScope () {
-			 return Global.Clone ();
+			if (Global is NullExceptionPreventer)
+				return new ConfigObject ();
+			else
+				return Global.Clone ();
 		}
 
 		public delegate void UserConfigFileChangedHandler ();
