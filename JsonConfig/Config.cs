@@ -80,16 +80,24 @@ namespace JsonConfig
 			Default = GetDefaultConfig (assembly);
 
 			// User config (provided through a settings.conf file)
-			var executionPath = AppDomain.CurrentDomain.BaseDirectory;
-			var userConfigFileName = "settings";
+			var execution_path = AppDomain.CurrentDomain.BaseDirectory;
+			var user_config_filename = "settings";
 
-			var d = new DirectoryInfo (executionPath);
+			// TODO this is ugly but makes life easier
+			// TODO not windows compatible
+			if (execution_path.EndsWith ("/bin/Debug/")) {
+				// we are run from the IDE, so the settings.conf needs
+				// to be searched two levels up
+				execution_path = execution_path.Replace ("/bin/Debug", "");
+			}
+
+			var d = new DirectoryInfo (execution_path);
 			var userConfig = (from FileInfo fi in d.GetFiles ()
 				where (
-					fi.FullName.EndsWith (userConfigFileName + ".conf") ||
-					fi.FullName.EndsWith (userConfigFileName + ".json") ||
-					fi.FullName.EndsWith (userConfigFileName + ".conf.json") ||
-					fi.FullName.EndsWith (userConfigFileName + ".json.conf")
+					fi.FullName.EndsWith (user_config_filename + ".conf") ||
+					fi.FullName.EndsWith (user_config_filename + ".json") ||
+					fi.FullName.EndsWith (user_config_filename + ".conf.json") ||
+					fi.FullName.EndsWith (user_config_filename + ".json.conf")
 				) select fi).FirstOrDefault ();
 
 			if (userConfig != null) {
