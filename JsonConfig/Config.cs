@@ -126,14 +126,21 @@ namespace JsonConfig
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
-		public static ConfigObject ApplyJsonFromFile (FileInfo file, ConfigObject config)
+		public static ConfigObject ApplyJsonFromFile (FileInfo file, ConfigObject config = null)
 		{
 			var overlay_json = File.ReadAllText (file.FullName);
 			dynamic overlay_config = ParseJson (overlay_json);
 			return Merger.Merge (overlay_config, config);
 		}
-		public static ConfigObject ApplyJson (string json, ConfigObject config)
+		public static ConfigObject ApplyJsonFromPath (string path, ConfigObject config = null)
 		{
+			return ApplyJsonFromFile (new FileInfo (path), config);
+		}
+		public static ConfigObject ApplyJson (string json, ConfigObject config = null)
+		{
+			if (config == null)
+				config = new ConfigObject ();
+
 			dynamic parsed = ParseJson (json);
 			return Merger.Merge (parsed, config);
 		}
