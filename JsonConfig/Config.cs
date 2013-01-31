@@ -111,7 +111,7 @@ namespace JsonConfig
 		private static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
-			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName);
+			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
 				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
