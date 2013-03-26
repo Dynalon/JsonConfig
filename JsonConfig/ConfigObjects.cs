@@ -91,6 +91,11 @@ namespace JsonConfig
 			return false;
 
 		}
+		public override string ToString ()
+		{
+			var w = new JsonFx.Json.JsonWriter ();
+			return w.Write (this.members);
+		}
 		public void ApplyJson (string json)
 		{
 			ConfigObject result = Config.ApplyJson (json, this);
