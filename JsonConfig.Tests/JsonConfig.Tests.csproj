@@ -49,6 +49,7 @@
     <Compile Include="InvalidJson.cs" />
     <Compile Include="MergerTests.cs" />
     <Compile Include="TypeTests.cs" />
+    <Compile Include="ConfigFromDirectory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -65,5 +66,17 @@
       <Project>{10095092-E1E5-441F-9380-B6329F3CFEB4}</Project>
       <Name>JsonConfig</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DirectoryMerge\" />
+    <Folder Include="DirectoryMerge\MoreFruits\" />
+    <Folder Include="DirectoryMerge\EvenMoreFruits\" />
+    <Folder Include="DirectoryMerge\EvenMoreFruits\EvenEvenMoreFruits\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectoryMerge\Fruits.json" />
+    <None Include="DirectoryMerge\MoreFruits\Apples.json" />
+    <None Include="DirectoryMerge\EvenMoreFruits\ListOfFruits.json" />
+    <None Include="DirectoryMerge\EvenMoreFruits\EvenEvenMoreFruits\File.json" />
   </ItemGroup>
 </Project>

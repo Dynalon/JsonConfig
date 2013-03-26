@@ -74,11 +74,11 @@ namespace JsonConfig
 		{
 			// some special methods that should be in our dynamic object
 			if (binder.Name == "ApplyJsonFromFile" && args.Length == 1 && args[0] is string) {
-				result = Config.ApplyJsonFromFile (new FileInfo ((string) args[0]), this);
+				result = Config.ApplyJsonFromFileInfo (new FileInfo ((string) args[0]), this);
 				return true;
 			}
 			if (binder.Name == "ApplyJsonFromFile" && args.Length == 1 && args[0] is FileInfo) {
-				result = Config.ApplyJsonFromFile ((FileInfo) args[0], this);
+				result = Config.ApplyJsonFromFileInfo ((FileInfo) args[0], this);
 				return true;
 			}
 			if (binder.Name == "Clone") {

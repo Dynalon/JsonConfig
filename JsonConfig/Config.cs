@@ -43,6 +43,8 @@ namespace JsonConfig
 			}
 		}
 
+		public static string defaultEnding = ".conf";
+
 		private static dynamic global_config;
 		public static dynamic Global {
 			get {
@@ -126,7 +128,7 @@ namespace JsonConfig
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
-		public static ConfigObject ApplyJsonFromFile (FileInfo file, ConfigObject config = null)
+		public static ConfigObject ApplyJsonFromFileInfo (FileInfo file, ConfigObject config = null)
 		{
 			var overlay_json = File.ReadAllText (file.FullName);
 			dynamic overlay_config = ParseJson (overlay_json);
@@ -134,7 +136,7 @@ namespace JsonConfig
 		}
 		public static ConfigObject ApplyJsonFromPath (string path, ConfigObject config = null)
 		{
-			return ApplyJsonFromFile (new FileInfo (path), config);
+			return ApplyJsonFromFileInfo (new FileInfo (path), config);
 		}
 		public static ConfigObject ApplyJson (string json, ConfigObject config = null)
 		{
@@ -144,6 +146,36 @@ namespace JsonConfig
 			dynamic parsed = ParseJson (json);
 			return Merger.Merge (parsed, config);
 		}
+		// seeks a folder for .conf files
+		public static ConfigObject ApplyFromDirectory (string path, ConfigObject config = null, bool recursive = false)
+		{
+			if (!Directory.Exists (path))
+				throw new Exception ("no folder found in the given path");
+
+			if (config == null)
+				config = new ConfigObject ();
+
+			DirectoryInfo info = new DirectoryInfo (path);
+			if (recursive) {
+				foreach (var dir in info.GetDirectories ()) {
+					Console.WriteLine ("reading in folder {0}", dir.ToString ());
+					config = ApplyFromDirectoryInfo (dir, config, recursive);
+				}
+			}
+
+			// find all files
+			var files = info.GetFiles ();
+			foreach (var file in files) {
+				Console.WriteLine ("reading in file {0}", file.ToString ());
+				config = ApplyJsonFromFileInfo (file, config);
+			}
+			return config;
+		}
+		public static ConfigObject ApplyFromDirectoryInfo (DirectoryInfo info, ConfigObject config = null, bool recursive = false)
+		{
+			return ApplyFromDirectory (info.FullName, config, recursive);
+		}
+
 		public static ConfigObject ParseJson (string json)
 		{
 			var lines = json.Split (new char[] {'\n'});
