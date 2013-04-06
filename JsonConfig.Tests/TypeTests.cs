@@ -95,6 +95,24 @@ namespace JsonConfig.Tests
 			bool? bn = Config.Global.NonExistant;
 			Assert.AreEqual (null, bn);
 		}
+		[Test]
+		public void CastConfigObjectToBool ()
+		{
+			// if a ConfigObject has nested members, we wan't to be able to do
+			// a fast check for non null in if statements:
+			//
+			// if (config.SomeMember) { ... }
+
+			string conf = @"{ SomeMember: { Foo: 42 } }";
+			dynamic c = new ConfigObject();
+			c.ApplyJson(conf);
+
+			bool t = (bool) c.SomeMember;
+			Assert.AreEqual(true, t);
+
+			bool f = (bool) c.NonExistantMember;
+			Assert.AreEqual (f, false);
+		}
 	}
 }
 

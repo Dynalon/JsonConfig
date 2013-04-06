@@ -209,6 +209,21 @@ namespace JsonConfig
 
 		#endregion
 		#endregion
+
+		#region casts
+		public static implicit operator bool (ConfigObject c)
+		{
+			// we want to test for a member:
+			// if (config.SomeMember) { ... }
+			//
+			// instead of:
+			// if (config.SomeMember != null) { ... }
+
+			// we return always true, because a NullExceptionPreventer is returned when member
+			// does not exist
+			return true;
+		}
+		#endregion
 	}
 
 	/// <summary>
