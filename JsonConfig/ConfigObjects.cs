@@ -85,6 +85,10 @@ namespace JsonConfig
 				result = this.Clone ();
 				return true;
 			}
+            if (binder.Name == "Exists" && args.Length == 1 && args[0] is string) {
+                result = members.ContainsKey ((string) args[0]);
+                return true;
+            }
 
 			// no other methods availabe, error
 			result = null;
