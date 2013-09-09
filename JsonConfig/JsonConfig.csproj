@@ -30,6 +30,11 @@
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>True</Externalconsole>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Testing</OutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />

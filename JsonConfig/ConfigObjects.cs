@@ -67,7 +67,10 @@ namespace JsonConfig
 		}
 		public override bool TrySetMember (SetMemberBinder binder, object value)
 		{
-			this.members.Add (binder.Name, value);
+			if (this.members.ContainsKey (binder.Name))
+				this.members[binder.Name] = value;
+			else
+				this.members.Add (binder.Name, value);
 			return true;
 		}
 		public override bool TryInvokeMember (InvokeMemberBinder binder, object[] args, out object result)
