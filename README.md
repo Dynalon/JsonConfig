@@ -169,3 +169,7 @@ The "magic" allows you to cast a not-yet existing field to common types, which w
 		DoSomethingWithDirectory (processFiles);
 	}
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Dynalon/jsonconfig/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
