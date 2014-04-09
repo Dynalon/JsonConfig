@@ -77,9 +77,11 @@ namespace JsonConfig
 		{
 			// static C'tor, run once to check for compiled/embedded config
 
-			// TODO scan ALL linked assemblies and merge their configs
-			var assembly = System.Reflection.Assembly.GetCallingAssembly ();
-			Default = GetDefaultConfig (assembly);
+			// scan ALL linked assemblies and merge their default configs
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			foreach (dynamic conf in assemblies.Select(assembly => GetDefaultConfig(assembly))) {
+				Default = Merger.Merge(conf, Default);
+			}
 
 			// User config (provided through a settings.conf file)
 			var execution_path = AppDomain.CurrentDomain.BaseDirectory;
