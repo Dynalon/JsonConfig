@@ -223,9 +223,15 @@ namespace JsonConfig
 		{
 			if(assembly == null)
 				assembly = System.Reflection.Assembly.GetEntryAssembly ();
-			
-			string[] res = assembly.GetManifestResourceNames ();
-			
+
+			string[] res;
+			try {
+				// this might fail for the 'Anonymously Hosted DynamicMethods Assembly' created by an Reflect.Emit()
+				res = assembly.GetManifestResourceNames ();
+			} catch {
+				// for those assemblies, we don't provide a config
+				return null;
+			}
 			var dconf_resource = res.Where (r =>
 					r.EndsWith ("default.conf", StringComparison.OrdinalIgnoreCase) ||
 					r.EndsWith ("default.json", StringComparison.OrdinalIgnoreCase) ||
