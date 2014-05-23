@@ -125,7 +125,7 @@ namespace JsonConfig.Tests
 
 			dynamic scope = Config.Global;
 			scope = Config.ApplyJson (@"{ Types : [{Type : ""Salad"", PricePerTen : 5 }]}", scope);
-			Assert.AreEqual (1, scope.Types.Length);
+			Assert.AreEqual (7, scope.Types.Length);
 		}
 		[Test]
 		public void EnabledModulesTest ()

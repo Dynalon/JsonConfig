@@ -201,6 +201,9 @@ namespace JsonConfig
 		public static void SetDefaultConfig (dynamic config)
 		{
 			Default = config;
+
+			// invalidate the Global config, forcing a re-merge next time its accessed
+			global_config = null;
 		}
 		public static void SetUserConfig (ConfigObject config)
 		{
@@ -211,6 +214,9 @@ namespace JsonConfig
 				userConfigWatcher.Dispose ();
 				userConfigWatcher = null;
 			}
+
+			// invalidate the Global config, forcing a re-merge next time its accessed
+			global_config = null;
 		}
 		private static dynamic GetDefaultConfig (Assembly assembly)
 		{
