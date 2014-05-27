@@ -119,18 +119,42 @@ namespace JsonConfig
 		private static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
+            var lastRead = File.GetLastWriteTime(info.FullName);
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
-				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
-				Console.WriteLine ("user configuration has changed, updating config information");
+                DateTime lastWriteTime = File.GetLastWriteTime(info.FullName);
+                if (lastWriteTime.Subtract(lastRead).TotalMilliseconds > 100)
+                {
+                    Console.WriteLine("user configuration has changed, updating config information");
+                    try
+                    {
+                        User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+                    }
+                    catch (IOException ex)
+                    {
+                        System.Threading.Thread.Sleep(100); //Sleep three seconds, and try again.
+                        try
+                        {
+                            User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+                        }
+                        catch (Exception ex2)
+                        {
+                            Console.WriteLine("updating user config failed.");
+                            throw;
+                        }
+                    }
 
-				// invalidate the Global config, forcing a re-merge next time its accessed
-				global_config = null;
 
-				// trigger our event
-				if (OnUserConfigFileChanged != null)
-					OnUserConfigFileChanged ();
+                    
+                    // invalidate the Global config, forcing a re-merge next time its accessed
+                    global_config = null;
+
+                    // trigger our event
+                    if (OnUserConfigFileChanged != null)
+                        OnUserConfigFileChanged();
+                }
+                lastRead = lastWriteTime;
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
