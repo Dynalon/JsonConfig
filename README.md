@@ -68,24 +68,24 @@ application.
 
 The settings.conf and the default.conf are then merged in a clever
 way and provided via the *Global* configuration.
+```csharp
+public void PrintInfo () {
+	// will result in apple, banana, pear 
+	foreach (var fruit in Config.Default.Fruits)
+		Console.WriteLine (fruit);
 
-	public void PrintInfo () {
-		// will result in apple, banana, pear 
-		foreach (var fruit in Config.Default.Fruits)
-			Console.WriteLine (fruit);
+	// will result in melon, peach
+	foreach (var fruit in Config.User.Fruits)
+		Console.WriteLine (fruit);
 
-		// will result in melon, peach
-		foreach (var fruit in Config.User.Fruits)
-			Console.WriteLine (fruit);
+	// access the Global scope, which is a merge of Default
+	// and User configuration
+	// will result in apple, banana, pear, melon, peach
+	foreach (var fruit in Config.Global.Fruits)
+		Console.WriteLine (fruit);
 
-		// access the Global scope, which is a merge of Default
-		// and User configuration
-		// will result in apple, banana, pear, melon, peach
-		foreach (var fruit in Config.Global.Fruits)
-			Console.WriteLine (fruit);
-
-	}
-
+}
+```
 ### Nesting objects
 
 We are not bound to any hierarchies, any valid JSON is a valid configuration
