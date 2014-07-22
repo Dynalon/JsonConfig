@@ -27,8 +27,14 @@ using System.Dynamic;
 using System.Reflection;
 using System.IO;
 
+// TODO: Cleanup JsonFx switch
+#if !USE_JSON_NET
 using JsonFx;
 using JsonFx.Json;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 using System.Text.RegularExpressions;
 
 namespace JsonConfig 
@@ -191,11 +197,26 @@ namespace JsonConfig
 				select l;
 			
 			var filtered_json = string.Join ("\n", filtered);
-			
-			var json_reader = new JsonReader ();
-			dynamic parsed = json_reader.Read (filtered_json);
-			// convert the ExpandoObject to ConfigObject before returning
-			return ConfigObject.FromExpando (parsed);
+
+            // TODO: Cleanup JsonFx switch
+            try
+            {
+#if !USE_JSON_NET
+			    var json_reader = new JsonReader ();
+			    dynamic parsed = json_reader.Read (filtered_json);
+#else
+                dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(filtered_json, new ExpandoObjectConverter());
+#endif
+
+                // convert the ExpandoObject to ConfigObject before returning
+                return ConfigObject.FromExpando(parsed);
+            }
+            catch (Exception e)
+            {
+                // Note: We don't want to pass back an exception type that is defined by our deserialization layer,
+                // we want to swap it for something more generic
+                throw new InvalidDataException("JSON layer threw an exception", e);
+            }
 		}
 		// overrides any default config specified in default.conf
 		public static void SetDefaultConfig (dynamic config)

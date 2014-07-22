@@ -162,6 +162,8 @@ namespace JsonConfig
 			var obj1_type = obj1.GetType ().GetElementType ();
 			if (obj1_type == typeof (ConfigObject)) 
 				return x.ToArray (typeof(ConfigObject));
+            else if (obj1_type == null) // Kludge for JSON.Net since it doesn't return embedded objects as ExpandoObjects
+                return x.ToArray(typeof(object));
 			else
 				return x.ToArray (obj1_type);
 		}

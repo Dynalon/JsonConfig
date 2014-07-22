@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace JsonConfig.Tests
@@ -7,14 +8,14 @@ namespace JsonConfig.Tests
 	public class InvalidJson
 	{
 		[Test]
-		[ExpectedException (typeof(JsonFx.Serialization.DeserializationException))]
+        [ExpectedException(typeof(InvalidDataException))]
 		public void EvidentlyInvalidJson ()
 		{
 			dynamic scope = Config.Global;
 			scope.ApplyJson ("jibberisch");
 		}
 		[Test]
-		[ExpectedException (typeof(JsonFx.Serialization.DeserializationException))]
+        [ExpectedException(typeof(InvalidDataException))]
 		public void MissingObjectIdentifier()
 		{	
 			dynamic scope = Config.Global;
