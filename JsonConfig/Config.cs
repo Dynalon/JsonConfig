@@ -131,14 +131,14 @@ namespace JsonConfig
                     {
                         User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
                     }
-                    catch (IOException ex)
+                    catch (IOException)
                     {
                         System.Threading.Thread.Sleep(100); //Sleep three seconds, and try again.
                         try
                         {
                             User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
                         }
-                        catch (Exception ex2)
+                        catch (Exception)
                         {
                             Console.WriteLine("updating user config failed.");
                             throw;
@@ -219,7 +219,8 @@ namespace JsonConfig
 			var json_reader = new JsonReader ();
 			dynamic parsed = json_reader.Read (filtered_json);
 			// convert the ExpandoObject to ConfigObject before returning
-			return ConfigObject.FromExpando (parsed);
+            var result = ConfigObject.FromExpando(parsed);
+			return result;
 		}
 		// overrides any default config specified in default.conf
 		public static void SetDefaultConfig (dynamic config)
