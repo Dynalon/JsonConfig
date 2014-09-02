@@ -116,7 +116,7 @@ namespace JsonConfig
 		#region IEnumerable implementation
 		public System.Collections.IEnumerator GetEnumerator ()
 		{
-			throw new System.NotImplementedException ();
+			return members.GetEnumerator();
 		}
 		#endregion
 
