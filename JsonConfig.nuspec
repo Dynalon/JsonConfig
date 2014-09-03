@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>JsonConfig</id>
+        <version>1.0.0</version>
+        <authors>Timo Dörr</authors>
+        <owners>Hüseyin Uslu</owners>
+        <licenseUrl>https://github.com/Dynalon/JsonConfig/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/Dynalon/JsonConfig</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>JsonConfig is a simple to use configuration library, allowing JSON based config files for your C#/.NET application instead of cumbersome web.config/application.config xml files.
+
+It is based on JsonFX and C# 4.0 dynamic feature. Allows putting your programs config file into .json files, where a default config can be embedded as a resource or put in the (web-)application folder. Configuration can be accessed via dynamic types, no custom classes or any other stub code is necessary.
+
+JsonConfig brings support for config inheritance, meaning a set of configuration files can be used to have a single, scoped configuration at runtime which is a merged version of all provided configuration files.</description>
+        <summary>simple configuration library using JSON and C# 4.0 dynamic feature</summary>
+        <copyright>Copyright (c) 2012 Timo Dörr</copyright>
+        <tags>json, config, configuration</tags>
+        <dependencies>
+            <dependency id="JsonFx" version="2.0.1209.2802" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="JsonConfig\bin\Debug\JsonConfig.dll" target="lib\JsonConfig.dll" />
+        <file src="JsonConfig\bin\Debug\JsonConfig.pdb" target="lib\JsonConfig.pdb" />
+    </files>
+</package>
