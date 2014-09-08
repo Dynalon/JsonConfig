@@ -100,8 +100,13 @@ namespace JsonConfig
 		}
 		public override string ToString ()
 		{
+            // TODO: Cleanup JsonFx switch
+#if !USE_JSON_NET
 			var w = new JsonFx.Json.JsonWriter ();
 			return w.Write (this.members);
+#else
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this.members);
+#endif
 		}
 		public void ApplyJson (string json)
 		{
