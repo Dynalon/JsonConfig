@@ -92,12 +92,12 @@ namespace JsonConfig
 			var user_config_filename = "settings";
 
 			// TODO this is ugly but makes life easier
-			// TODO not windows compatible
-			if (execution_path.EndsWith ("/bin/Debug/")) {
-				// we are run from the IDE, so the settings.conf needs
-				// to be searched two levels up
-				execution_path = execution_path.Replace ("/bin/Debug", "");
-			}
+			// we are run from the IDE, so the settings.conf needs
+			// to be searched two levels up
+			if (execution_path.EndsWith ("/bin/Debug/"))
+				execution_path = execution_path.Replace("/bin/Debug", ""); // for Unix-like
+			if (execution_path.EndsWith(@"\bin\Debug\")) 				
+				execution_path = execution_path.Replace(@"\bin\Debug", ""); // for Win
 
 			var d = new DirectoryInfo (execution_path);
 			var userConfig = (from FileInfo fi in d.GetFiles ()
