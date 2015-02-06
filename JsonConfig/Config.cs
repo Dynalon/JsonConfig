@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2012 Timo Dörr
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -111,29 +111,29 @@ namespace JsonConfig
 				) select fi).FirstOrDefault ();
 
 			if (userConfig != null) {
-                var configFileText = File.ReadAllText(userConfig.FullName);
-                lastConfigHash = GetConfigHash(configFileText);
-                User = Config.ParseJson(configFileText);
-                WatchUserConfig(userConfig);
+				var configFileText = File.ReadAllText(userConfig.FullName);
+				lastConfigHash = GetConfigHash(configFileText);
+				User = Config.ParseJson(configFileText);
+				WatchUserConfig(userConfig);
 			}
 			else {
 				User = new NullExceptionPreventer ();
 			}
 		}
 
-        private static HashAlgorithm hashAlgorithm = SHA1.Create();
-        private static string lastConfigHash = String.Empty;
-        private static string GetConfigHash(string configString)
-        {
-            var configBytes = Encoding.UTF8.GetBytes(configString);
-            var configHash = hashAlgorithm.ComputeHash(configBytes);
+		private static HashAlgorithm hashAlgorithm = SHA1.Create();
+		private static string lastConfigHash = String.Empty;
+		private static string GetConfigHash(string configString)
+		{
+			var configBytes = Encoding.UTF8.GetBytes(configString);
+			var configHash = hashAlgorithm.ComputeHash(configBytes);
 
-            var hashStringBuilder = new StringBuilder();
-            foreach (byte b in configHash)
-                hashStringBuilder.Append(b.ToString("X2"));
+			var hashStringBuilder = new StringBuilder();
+			foreach (byte b in configHash)
+				hashStringBuilder.Append(b.ToString("X2"));
 
-            return hashStringBuilder.ToString();
-        }
+			return hashStringBuilder.ToString();
+		}
 
 		private static FileSystemWatcher userConfigWatcher;
 		private static void WatchUserConfig (FileInfo info)
@@ -141,32 +141,29 @@ namespace JsonConfig
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
-                do
-                {
-                    try
-                    {
-                        var configFileText = File.ReadAllText(info.FullName);
-                        var configHash = GetConfigHash(configFileText);
+				do {
+					try {
+						var configFileText = File.ReadAllText(info.FullName);
+						var configHash = GetConfigHash(configFileText);
 
-                        if (lastConfigHash == configHash) // file hasn't changed
-                            return;
-                        else // file has been updated
-                            lastConfigHash = configHash;
+						if (lastConfigHash == configHash) // file hasn't changed
+							return;
+						else // file has been updated
+							lastConfigHash = configHash;
 
-                        User = (ConfigObject)ParseJson(configFileText);
+						User = (ConfigObject)ParseJson(configFileText);
 
-                        // invalidate the Global config, forcing a re-merge next time its accessed
-                        global_config = null;
+						// invalidate the Global config, forcing a re-merge next time its accessed
+						global_config = null;
 
-                        // trigger our event
-                        if (OnUserConfigFileChanged != null)
-                            OnUserConfigFileChanged();
+						// trigger our event
+						if (OnUserConfigFileChanged != null)
+							OnUserConfigFileChanged();
 
-                        break;
-                    }
-                    catch (IOException) { } // in case file is still open
-                }
-                while (true);
+						break;
+					}
+					catch (IOException) { } // in case file is still open
+				} while (true);
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
