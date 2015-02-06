@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2012 Timo Dörr
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,8 @@ using System.IO;
 using JsonFx;
 using JsonFx.Json;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace JsonConfig 
 {
@@ -91,6 +93,14 @@ namespace JsonConfig
 			var execution_path = AppDomain.CurrentDomain.BaseDirectory;
 			var user_config_filename = "settings";
 
+			// TODO this is ugly but makes life easier
+			// we are run from the IDE, so the settings.conf needs
+			// to be searched two levels up
+			if (execution_path.EndsWith ("/bin/Debug/"))
+				execution_path = execution_path.Replace("/bin/Debug", ""); // for Unix-like
+			if (execution_path.EndsWith(@"\bin\Debug\")) 				
+				execution_path = execution_path.Replace(@"\bin\Debug", ""); // for Win
+
 			var d = new DirectoryInfo (execution_path);
 			var userConfig = (from FileInfo fi in d.GetFiles ()
 				where (
@@ -101,28 +111,59 @@ namespace JsonConfig
 				) select fi).FirstOrDefault ();
 
 			if (userConfig != null) {
-				User = Config.ParseJson (File.ReadAllText (userConfig.FullName));
-				WatchUserConfig (userConfig);
+				var configFileText = File.ReadAllText(userConfig.FullName);
+				lastConfigHash = GetConfigHash(configFileText);
+				User = Config.ParseJson(configFileText);
+				WatchUserConfig(userConfig);
 			}
 			else {
 				User = new NullExceptionPreventer ();
 			}
 		}
+
+		private static HashAlgorithm hashAlgorithm = SHA1.Create();
+		private static string lastConfigHash = String.Empty;
+		private static string GetConfigHash(string configString)
+		{
+			var configBytes = Encoding.UTF8.GetBytes(configString);
+			var configHash = hashAlgorithm.ComputeHash(configBytes);
+
+			var hashStringBuilder = new StringBuilder();
+			foreach (byte b in configHash)
+				hashStringBuilder.Append(b.ToString("X2"));
+
+			return hashStringBuilder.ToString();
+		}
+
 		private static FileSystemWatcher userConfigWatcher;
-		public static void WatchUserConfig (FileInfo info)
+		private static void WatchUserConfig (FileInfo info)
 		{
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
-				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
-				Console.WriteLine ("user configuration has changed, updating config information");
+				do {
+					try {
+						var configFileText = File.ReadAllText(info.FullName);
+						var configHash = GetConfigHash(configFileText);
 
-				// invalidate the Global config, forcing a re-merge next time its accessed
-				global_config = null;
+						if (lastConfigHash == configHash) // file hasn't changed
+							return;
+						else // file has been updated
+							lastConfigHash = configHash;
 
-				// trigger our event
-				if (OnUserConfigFileChanged != null)
-					OnUserConfigFileChanged ();
+						User = (ConfigObject)ParseJson(configFileText);
+
+						// invalidate the Global config, forcing a re-merge next time its accessed
+						global_config = null;
+
+						// trigger our event
+						if (OnUserConfigFileChanged != null)
+							OnUserConfigFileChanged();
+
+						break;
+					}
+					catch (IOException) { } // in case file is still open
+				} while (true);
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
