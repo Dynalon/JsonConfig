@@ -7,6 +7,7 @@ using System.Reflection;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace JsonConfig.Tests
 {
@@ -41,23 +42,26 @@ namespace JsonConfig.Tests
 			// can't use GetUUT here since this will already involve conversion
 			var name = "Types";
 			var jsonTests = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("JsonConfig.Tests.JSON." + name + ".json");
-			var sReader = new StreamReader (jsonTests);
-			var jReader = new JsonFx.Json.JsonReader ();
-			dynamic parsed = jReader.Read (sReader.ReadToEnd ());
+		    
+            using (var sReader = new StreamReader(jsonTests))
+            {
+                var json = sReader.ReadToEnd();
+                dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(json);
 
-			dynamic config = ConfigObject.FromExpando (parsed);
+                dynamic config = ConfigObject.FromExpando(parsed);
 
-			Assert.AreEqual ("bar", config.Foo);
-			Assert.AreEqual ("bar", ((ICollection<dynamic>) config.NestedArray).First ().Foo);
-			Assert.AreEqual ("bar", config.DoubleNestedArray[0].One[0].Foo);
+                Assert.AreEqual("bar", config.Foo);
+                Assert.AreEqual("bar", ((ICollection<dynamic>)config.NestedArray).First().Foo);
+                Assert.AreEqual("bar", config.DoubleNestedArray[0].One[0].Foo);
 
-			Assert.IsInstanceOfType (typeof (ConfigObject[]), config.DoubleNestedArray[0].One);
-			Assert.AreEqual ("bar", config.DoubleNestedArray[0].One[0].Foo);
-			Assert.AreEqual (4, config.DoubleNestedArray[0].One.Length);
+                Assert.IsInstanceOfType(typeof(ConfigObject[]), config.DoubleNestedArray[0].One);
+                Assert.AreEqual("bar", config.DoubleNestedArray[0].One[0].Foo);
+                Assert.AreEqual(4, config.DoubleNestedArray[0].One.Length);
 
-			Assert.AreEqual ("bar", config.DoubleNestedArray[1].Two[0].Foo);
-			Assert.AreEqual ("bar", config.DoubleNestedArray[1].Two[3].Foo);
-			Assert.AreEqual ("bar", config.DoubleNestedArray[1].Two[3].Foo);
+                Assert.AreEqual("bar", config.DoubleNestedArray[1].Two[0].Foo);
+                Assert.AreEqual("bar", config.DoubleNestedArray[1].Two[3].Foo);
+                Assert.AreEqual("bar", config.DoubleNestedArray[1].Two[3].Foo);
+            }
 		}
 		[Test]
 		public void SimpleExpandoToConfigObject ()

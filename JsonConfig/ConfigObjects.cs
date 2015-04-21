@@ -24,6 +24,7 @@ using System;
 using System.Dynamic;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace JsonConfig
 {
@@ -100,8 +101,7 @@ namespace JsonConfig
 		}
 		public override string ToString ()
 		{
-			var w = new JsonFx.Json.JsonWriter ();
-			return w.Write (this.members);
+		    return JsonConvert.SerializeObject(this.members);
 		}
 		public void ApplyJson (string json)
 		{

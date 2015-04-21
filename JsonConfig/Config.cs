@@ -27,9 +27,8 @@ using System.Dynamic;
 using System.Reflection;
 using System.IO;
 
-using JsonFx;
-using JsonFx.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace JsonConfig 
 {
@@ -191,9 +190,8 @@ namespace JsonConfig
 				select l;
 			
 			var filtered_json = string.Join ("\n", filtered);
-			
-			var json_reader = new JsonReader ();
-			dynamic parsed = json_reader.Read (filtered_json);
+
+		    dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(filtered_json);
 			// convert the ExpandoObject to ConfigObject before returning
 			return ConfigObject.FromExpando (parsed);
 		}
