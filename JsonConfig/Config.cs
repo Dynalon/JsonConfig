@@ -29,6 +29,7 @@ using System.IO;
 
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonConfig 
 {
@@ -191,9 +192,9 @@ namespace JsonConfig
 			
 			var filtered_json = string.Join ("\n", filtered);
 
-		    dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(filtered_json);
+		    var parsed = JsonConvert.DeserializeObject<JObject>(filtered_json);
 			// convert the ExpandoObject to ConfigObject before returning
-			return ConfigObject.FromExpando (parsed);
+			return ConfigObject.FromJobject(parsed);
 		}
 		// overrides any default config specified in default.conf
 		public static void SetDefaultConfig (dynamic config)

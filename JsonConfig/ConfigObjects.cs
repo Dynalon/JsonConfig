@@ -24,7 +24,9 @@ using System;
 using System.Dynamic;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonConfig
 {
@@ -57,6 +59,67 @@ namespace JsonConfig
 			}
 			return c;
 		}
+        public static ConfigObject FromJobject(JObject source)
+        {
+            var sourceDictionary = source.ToObject<Dictionary<string, object>>();
+            var configObject = new ConfigObject();
+            var configDictionary = (IDictionary<string, object>)configObject;
+
+            var JObjectKeys = new List<string>();
+            var JArrayKeys = new List<string>();
+            foreach (var r in sourceDictionary)
+            {
+                string key = r.Key;
+                object value = r.Value;
+                if (value.GetType() == typeof (JObject))
+                {
+                    JObjectKeys.Add(key);
+                }
+                else if (value.GetType() == typeof (JArray))
+                {
+                    JArrayKeys.Add(key);
+                }
+                else
+                {
+                    configDictionary[key] = value;
+                }   
+            }
+
+            foreach (var key in JArrayKeys)
+            {
+                var childType = ((JArray) sourceDictionary[key]).Values().FirstOrDefault();
+                bool isProperty = false;
+                if (childType != null)
+                {
+                    isProperty = childType.GetType() == typeof (JProperty);
+                }
+                if (isProperty)
+                {
+                    var valueList = ((JArray)sourceDictionary[key]).Values();
+                    var arrayList = new List<Dictionary<string, object>>();
+                    
+                    var valueDict = new Dictionary<string, object>();
+                    foreach (var value in valueList)
+                    {
+                        if (value.Type == JTokenType.Property)
+                        {
+                            var valueKeyName = ((JProperty) value).Name;
+                            valueDict[valueKeyName] = ((JProperty)value).Value;
+                        }
+                    }
+                    arrayList.Add(valueDict);
+                    configDictionary[key] = arrayList;
+                }
+                else
+                {
+                    configDictionary[key] = ((JArray)sourceDictionary[key]).Values().Select(x => ((JValue)x).Value).ToArray();   
+                }
+            }
+            JObjectKeys.ForEach(key => configDictionary[key] = FromJobject(sourceDictionary[key] as JObject));
+
+
+            return configObject;
+        }
 		public override bool TryGetMember (GetMemberBinder binder, out object result)
 		{
 			if (members.ContainsKey (binder.Name))
@@ -235,7 +298,7 @@ namespace JsonConfig
 
 	/// <summary>
 	/// Null exception preventer. This allows for hassle-free usage of configuration values that are not
-	/// defined in the config file. I.e. we can do Config.Scope.This.Field.Does.Not.Exist.Ever, and it will
+	/// defined in the config file. I.source. we can do Config.Scope.This.Field.Does.Not.Exist.Ever, and it will
 	/// not throw an NullPointer exception, but return te NullExceptionPreventer object instead.
 	/// 
 	/// The NullExceptionPreventer can be cast to everything, and will then return default/empty value of
