@@ -95,23 +95,47 @@ namespace JsonConfig
                 }
                 if (isProperty)
                 {
-                    var valueList = ((JArray)sourceDictionary[key]).Values();
-                    var arrayList = new List<Dictionary<string, object>>();
-                    
-                    var valueDict = new Dictionary<string, object>();
-                    foreach (var value in valueList)
+                    //                    var propertyList = ((JArray)sourceDictionary[key]).ToObject<List<Dictionary<string, object>>>();
+//                    configDictionary[key] = FromJobject(propertyList);
+                    var propertyList = ((JArray)sourceDictionary[key]).ToObject<List<JObject>>();
+                    var configObjectList = new List<ConfigObject>();
+                    foreach (var property in propertyList)
                     {
-                        if (value.Type == JTokenType.Property)
-                        {
-                            var valueKeyName = ((JProperty) value).Name;
-                            valueDict[valueKeyName] = ((JProperty)value).Value;
-                        }
+                        configObjectList.Add(FromJobject(property));
                     }
-                    arrayList.Add(valueDict);
-                    configDictionary[key] = arrayList;
+                    configDictionary[key] = configObjectList;
+
+//                    var valueList = ((JArray)sourceDictionary[key]).Values();
+//                    var arrayList = new List<Dictionary<string, object>>();
+//                    
+//                    var valueDict = new Dictionary<string, object>();
+//                    foreach (var value in valueList)
+//                    {
+//                        if (value.Type == JTokenType.Property)
+//                        {
+//                            var valueKeyName = ((JProperty) value).Name;
+//                            valueDict[valueKeyName] = ((JProperty)value).Value;
+//                        }
+//                    }
+//                    arrayList.Add(valueDict);
+//                    configDictionary[key] = arrayList;
                 }
                 else
                 {
+//                    var valueList = ((JArray)sourceDictionary[key]).Values();
+//                    var arrayList = new List<Dictionary<string, object>>();
+//                                        
+//                    var valueDict = new Dictionary<string, object>();
+//                    foreach (var value in valueList)
+//                    {
+//                        if (value.Type == JTokenType.Property)
+//                        {
+//                            var valueKeyName = ((JProperty) value).Name;
+//                            valueDict[valueKeyName] = ((JProperty)value).Value;
+//                        }
+//                    }
+//                    arrayList.Add(valueDict);
+//                    configDictionary[key] = arrayList;
                     configDictionary[key] = ((JArray)sourceDictionary[key]).Values().Select(x => ((JValue)x).Value).ToArray();   
                 }
             }
