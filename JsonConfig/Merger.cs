@@ -159,7 +159,14 @@ namespace JsonConfig
 			x.AddRange (obj1);
 			x.AddRange (obj2);
 
-			var obj1_type = obj1.GetType ().GetElementType ();
+            var obj1_type = obj1.GetType().GetElementType();
+            var obj1List = ((IEnumerable) obj1).Cast<dynamic>().FirstOrDefault();
+		    if (obj1List != null)
+		    {
+		        var obj1ItemType = obj1List.GetType();
+		        obj1_type = obj1ItemType;
+		    }
+            
 			if (obj1_type == typeof (ConfigObject)) 
 				return x.ToArray (typeof(ConfigObject));
 			else
