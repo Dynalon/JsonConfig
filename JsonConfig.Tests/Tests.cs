@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -79,7 +80,8 @@ namespace JsonConfig.Tests
 			dynamic parsed = GetUUT ("Firewall");
 			dynamic merged = Merger.Merge (parsed.UserConfig, parsed.FactoryDefault);
 	
-			var interfaces = merged.Interfaces as ICollection<string>;
+//			var interfaces = merged.Interfaces as ICollection<string>;
+		    var interfaces = ((IEnumerable) merged.Interfaces).Cast<object>().Select(x => x.ToString()).ToList();
 			Assert.AreEqual (3, interfaces.Count ());
 		
 			var zones = merged.Zones as ICollection<dynamic>;
@@ -90,7 +92,7 @@ namespace JsonConfig.Tests
 			// one portmapping is present at least
 			var intzone = zones.Where (d => d.Name == "Internal").First ();
 			Assert.That (intzone.PortMapping != null);
-			Assert.Greater (intzone.PortMapping.Length, 0);
+			Assert.Greater (intzone.PortMapping.Count, 0);
 		}
 		[Test]
 		public void DefaultConfigFound ()
