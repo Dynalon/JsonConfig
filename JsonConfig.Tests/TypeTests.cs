@@ -5,9 +5,9 @@ using JsonConfig;
 using System.Dynamic;
 using System.Reflection;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonConfig.Tests
 {
@@ -26,7 +26,7 @@ namespace JsonConfig.Tests
 
 			e.Nested = f;
 
-			dynamic c = ConfigObject.FromExpando (e);
+			dynamic c = (ConfigObject)e;
 
 			Assert.IsInstanceOfType (typeof (ConfigObject), c);
 			Assert.IsInstanceOfType (typeof (ConfigObject), c.Nested);
@@ -46,14 +46,14 @@ namespace JsonConfig.Tests
             using (var sReader = new StreamReader(jsonTests))
             {
                 var json = sReader.ReadToEnd();
-                dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(json);
+                dynamic parsed = JsonConvert.DeserializeObject<JObject>(json);
 
-                dynamic config = ConfigObject.FromExpando(parsed);
+                dynamic config = ConfigObject.FromJobject(parsed);
 
                 Assert.AreEqual("bar", config.Foo);
-                Assert.AreEqual("bar", ((ICollection<dynamic>)config.NestedArray).First().Foo);
+                Assert.AreEqual("bar",Enumerable.First(config.NestedArray).Foo);
                 Assert.AreEqual("bar", config.DoubleNestedArray[0].One[0].Foo);
-
+                
                 Assert.IsInstanceOfType(typeof(ConfigObject[]), config.DoubleNestedArray[0].One);
                 Assert.AreEqual("bar", config.DoubleNestedArray[0].One[0].Foo);
                 Assert.AreEqual(4, config.DoubleNestedArray[0].One.Length);
@@ -71,14 +71,15 @@ namespace JsonConfig.Tests
 			e.Foo = "bar";
 			e.X = 1;
 
-			var c = ConfigObject.FromExpando (e);
+		    // dynamic c = ConfigObject.FromExpando(e);
+		    dynamic c = (ConfigObject) e;
 
 			Assert.IsInstanceOfType (typeof(ConfigObject), c);
 
 			Assert.IsInstanceOfType (typeof(string), c.Foo);
 			Assert.AreEqual ("bar", c.Foo);
 
-			Assert.IsInstanceOfType (typeof(int), c.X);
+            Assert.IsInstanceOfType (typeof(long), c.X); // Json.NET by default reads integer values as Int64
 			Assert.AreEqual (1, c.X);
 		}
 		[Test]

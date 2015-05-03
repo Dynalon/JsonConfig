@@ -92,7 +92,7 @@ namespace JsonConfig.Tests
 			// one portmapping is present at least
 			var intzone = zones.Where (d => d.Name == "Internal").First ();
 			Assert.That (intzone.PortMapping != null);
-			Assert.Greater (intzone.PortMapping.Count, 0);
+			Assert.Greater (intzone.PortMapping.Length, 0);
 		}
 		[Test]
 		public void DefaultConfigFound ()
