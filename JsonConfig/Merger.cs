@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonConfig
 {
@@ -44,8 +46,18 @@ namespace JsonConfig
 
 			// make sure we only deal with ConfigObject but not ExpandoObject as currently
 			// return from JsonFX
-			if (obj1 is ExpandoObject) obj1 = ConfigObject.FromExpando (obj1);
-			if (obj2 is ExpandoObject) obj2 = ConfigObject.FromExpando (obj2);
+		    if (obj1 is ExpandoObject)
+		    {
+		        var tmp = JsonConvert.SerializeObject(obj1);
+                obj1 = JsonConvert.DeserializeObject<JObject>(tmp);
+		        obj1 = ConfigObject.FromJobject(obj1);
+		    }
+		    if (obj2 is ExpandoObject)
+		    {
+		        var tmp = JsonConvert.SerializeObject(obj2);
+                obj2 = JsonConvert.DeserializeObject<JObject>(tmp);
+                obj2 = ConfigObject.FromJobject(obj2);
+		    }
 
 			// if both objects are NullExceptionPreventer, return a ConfigObject so the
 			// user gets an "Empty" ConfigObject
@@ -159,7 +171,14 @@ namespace JsonConfig
 			x.AddRange (obj1);
 			x.AddRange (obj2);
 
-			var obj1_type = obj1.GetType ().GetElementType ();
+            var obj1_type = obj1.GetType().GetElementType();
+            var obj1List = ((IEnumerable) obj1).Cast<dynamic>().FirstOrDefault();
+		    if (obj1List != null)
+		    {
+		        var obj1ItemType = obj1List.GetType();
+		        obj1_type = obj1ItemType;
+		    }
+            
 			if (obj1_type == typeof (ConfigObject)) 
 				return x.ToArray (typeof(ConfigObject));
 			else

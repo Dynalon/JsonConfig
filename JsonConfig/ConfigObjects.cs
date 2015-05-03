@@ -23,7 +23,11 @@
 using System;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonConfig
 {
@@ -32,30 +36,62 @@ namespace JsonConfig
 		internal Dictionary<string, object> members = new Dictionary<string, object> ();
 		public static ConfigObject FromExpando (ExpandoObject e)
 		{
-			var edict = e as IDictionary<string, object>;
-			var c = new ConfigObject ();
-			var cdict = (IDictionary<string, object>) c;
-
-			// this is not complete. It will, however work for JsonFX ExpandoObjects
-			// which consits only of primitive types, ExpandoObject or ExpandoObject [] 
-			// but won't work for generic ExpandoObjects which might include collections etc.
-			foreach (var kvp in edict) {
-				// recursively convert and add ExpandoObjects
-				if (kvp.Value is ExpandoObject) {
-					cdict.Add (kvp.Key, FromExpando ((ExpandoObject) kvp.Value));
-				}
-				else if (kvp.Value is ExpandoObject[]) {
-					var config_objects = new List<ConfigObject> ();
-					foreach (var ex in ((ExpandoObject[]) kvp.Value)) {
-						config_objects.Add (FromExpando (ex));
-					}
-					cdict.Add (kvp.Key, config_objects.ToArray ());
-				}
-				else
-					cdict.Add (kvp.Key, kvp.Value);
-			}
-			return c;
+		    return (ConfigObject) e;
 		}
+        public static ConfigObject FromJobject(JObject source)
+        {
+            var sourceDictionary = source.ToObject<Dictionary<string, object>>();
+            var configObject = new ConfigObject();
+            var configDictionary = (IDictionary<string, object>)configObject;
+
+            var JObjectKeys = new List<string>();
+            var JArrayKeys = new List<string>();
+            foreach (var r in sourceDictionary)
+            {
+                string key = r.Key;
+                object value = r.Value;
+                if (value.GetType() == typeof (JObject))
+                {
+                    JObjectKeys.Add(key);
+                }
+                else if (value.GetType() == typeof (JArray))
+                {
+                    JArrayKeys.Add(key);
+                }
+                else
+                {
+                    configDictionary[key] = value;
+                }   
+            }
+
+            foreach (var key in JArrayKeys)
+            {
+                var childType = ((JArray) sourceDictionary[key]).Values().FirstOrDefault();
+                bool isProperty = false;
+                if (childType != null)
+                {
+                    isProperty = childType.GetType() == typeof (JProperty);
+                }
+                if (isProperty)
+                {
+                    var propertyList = ((JArray)sourceDictionary[key]).ToObject<List<JObject>>();
+                    var configObjectList = new Collection<ConfigObject>();
+                    foreach (var property in propertyList)
+                    {
+                        configObjectList.Add(FromJobject(property));
+                    }
+                    configDictionary[key] = configObjectList.ToArray();
+                }
+                else
+                {
+                    configDictionary[key] = ((JArray)sourceDictionary[key]).Values().Select(x => ((JValue)x).Value).ToArray();   
+                }
+            }
+            JObjectKeys.ForEach(key => configDictionary[key] = FromJobject(sourceDictionary[key] as JObject));
+
+
+            return configObject;
+        }
 		public override bool TryGetMember (GetMemberBinder binder, out object result)
 		{
 			if (members.ContainsKey (binder.Name))
@@ -100,8 +136,7 @@ namespace JsonConfig
 		}
 		public override string ToString ()
 		{
-			var w = new JsonFx.Json.JsonWriter ();
-			return w.Write (this.members);
+		    return JsonConvert.SerializeObject(this.members);
 		}
 		public void ApplyJson (string json)
 		{
@@ -111,7 +146,9 @@ namespace JsonConfig
 		}
 		public static implicit operator ConfigObject (ExpandoObject exp)
 		{
-			return ConfigObject.FromExpando (exp);
+		    var tmp = JsonConvert.SerializeObject(exp);
+		    var tmpObj = JsonConvert.DeserializeObject<JObject>(tmp);
+            return ConfigObject.FromJobject(tmpObj);
 		}
 		#region IEnumerable implementation
 		public System.Collections.IEnumerator GetEnumerator ()
@@ -230,12 +267,13 @@ namespace JsonConfig
 			// does not exist
 			return true;
 		}
-		#endregion
+
+	    #endregion
 	}
 
 	/// <summary>
 	/// Null exception preventer. This allows for hassle-free usage of configuration values that are not
-	/// defined in the config file. I.e. we can do Config.Scope.This.Field.Does.Not.Exist.Ever, and it will
+	/// defined in the config file. I.source. we can do Config.Scope.This.Field.Does.Not.Exist.Ever, and it will
 	/// not throw an NullPointer exception, but return te NullExceptionPreventer object instead.
 	/// 
 	/// The NullExceptionPreventer can be cast to everything, and will then return default/empty value of

@@ -36,7 +36,8 @@ namespace JsonConfig.Tests
 			e.Foo = "bar";
 			e.X = 1;
 
-			dynamic c = ConfigObject.FromExpando (e);
+            //dynamic c = ConfigObject.FromExpando(e);
+            dynamic c = (ConfigObject)e; 
 
 			Assert.IsInstanceOfType (typeof(ConfigObject), c);
 			Assert.AreEqual ("bar", c.Foo);
@@ -92,7 +93,8 @@ namespace JsonConfig.Tests
 			dynamic merged = Merger.Merge (e, new ExpandoObject ());
 			Assert.IsInstanceOfType (typeof(ConfigObject), merged);
 
-			Assert.IsInstanceOfType (typeof(int), merged.X);
+//			Assert.IsInstanceOfType (typeof(int), merged.X);
+            Assert.IsInstanceOfType (typeof(long), merged.X); // Json.NET by default reads integer values as Int64
 			Assert.IsInstanceOfType (typeof(string), merged.Foo);
 
 			Assert.AreEqual ("Bar", merged.Foo);

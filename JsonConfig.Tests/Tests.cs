@@ -1,10 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using Microsoft.CSharp;
 
-using JsonFx;
 using NUnit.Framework;
 using JsonConfig;
 using System.Reflection;
@@ -80,7 +80,8 @@ namespace JsonConfig.Tests
 			dynamic parsed = GetUUT ("Firewall");
 			dynamic merged = Merger.Merge (parsed.UserConfig, parsed.FactoryDefault);
 	
-			var interfaces = merged.Interfaces as ICollection<string>;
+//			var interfaces = merged.Interfaces as ICollection<string>;
+		    var interfaces = ((IEnumerable) merged.Interfaces).Cast<object>().Select(x => x.ToString()).ToList();
 			Assert.AreEqual (3, interfaces.Count ());
 		
 			var zones = merged.Zones as ICollection<dynamic>;
