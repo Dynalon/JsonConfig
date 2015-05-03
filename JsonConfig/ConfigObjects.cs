@@ -23,6 +23,7 @@
 using System;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -35,29 +36,7 @@ namespace JsonConfig
 		internal Dictionary<string, object> members = new Dictionary<string, object> ();
 		public static ConfigObject FromExpando (ExpandoObject e)
 		{
-			var edict = e as IDictionary<string, object>;
-			var c = new ConfigObject ();
-			var cdict = (IDictionary<string, object>) c;
-
-			// this is not complete. It will, however work for JsonFX ExpandoObjects
-			// which consits only of primitive types, ExpandoObject or ExpandoObject [] 
-			// but won't work for generic ExpandoObjects which might include collections etc.
-			foreach (var kvp in edict) {
-				// recursively convert and add ExpandoObjects
-				if (kvp.Value is ExpandoObject) {
-					cdict.Add (kvp.Key, FromExpando ((ExpandoObject) kvp.Value));
-				}
-				else if (kvp.Value is ExpandoObject[]) {
-					var config_objects = new List<ConfigObject> ();
-					foreach (var ex in ((ExpandoObject[]) kvp.Value)) {
-						config_objects.Add (FromExpando (ex));
-					}
-					cdict.Add (kvp.Key, config_objects.ToArray ());
-				}
-				else
-					cdict.Add (kvp.Key, kvp.Value);
-			}
-			return c;
+		    return (ConfigObject) e;
 		}
         public static ConfigObject FromJobject(JObject source)
         {
@@ -95,47 +74,16 @@ namespace JsonConfig
                 }
                 if (isProperty)
                 {
-                    //                    var propertyList = ((JArray)sourceDictionary[key]).ToObject<List<Dictionary<string, object>>>();
-//                    configDictionary[key] = FromJobject(propertyList);
                     var propertyList = ((JArray)sourceDictionary[key]).ToObject<List<JObject>>();
-                    var configObjectList = new List<ConfigObject>();
+                    var configObjectList = new Collection<ConfigObject>();
                     foreach (var property in propertyList)
                     {
                         configObjectList.Add(FromJobject(property));
                     }
-                    configDictionary[key] = configObjectList;
-
-//                    var valueList = ((JArray)sourceDictionary[key]).Values();
-//                    var arrayList = new List<Dictionary<string, object>>();
-//                    
-//                    var valueDict = new Dictionary<string, object>();
-//                    foreach (var value in valueList)
-//                    {
-//                        if (value.Type == JTokenType.Property)
-//                        {
-//                            var valueKeyName = ((JProperty) value).Name;
-//                            valueDict[valueKeyName] = ((JProperty)value).Value;
-//                        }
-//                    }
-//                    arrayList.Add(valueDict);
-//                    configDictionary[key] = arrayList;
+                    configDictionary[key] = configObjectList.ToArray();
                 }
                 else
                 {
-//                    var valueList = ((JArray)sourceDictionary[key]).Values();
-//                    var arrayList = new List<Dictionary<string, object>>();
-//                                        
-//                    var valueDict = new Dictionary<string, object>();
-//                    foreach (var value in valueList)
-//                    {
-//                        if (value.Type == JTokenType.Property)
-//                        {
-//                            var valueKeyName = ((JProperty) value).Name;
-//                            valueDict[valueKeyName] = ((JProperty)value).Value;
-//                        }
-//                    }
-//                    arrayList.Add(valueDict);
-//                    configDictionary[key] = arrayList;
                     configDictionary[key] = ((JArray)sourceDictionary[key]).Values().Select(x => ((JValue)x).Value).ToArray();   
                 }
             }
@@ -198,7 +146,9 @@ namespace JsonConfig
 		}
 		public static implicit operator ConfigObject (ExpandoObject exp)
 		{
-			return ConfigObject.FromExpando (exp);
+		    var tmp = JsonConvert.SerializeObject(exp);
+		    var tmpObj = JsonConvert.DeserializeObject<JObject>(tmp);
+            return ConfigObject.FromJobject(tmpObj);
 		}
 		#region IEnumerable implementation
 		public System.Collections.IEnumerator GetEnumerator ()
@@ -317,7 +267,8 @@ namespace JsonConfig
 			// does not exist
 			return true;
 		}
-		#endregion
+
+	    #endregion
 	}
 
 	/// <summary>
