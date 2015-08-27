@@ -119,18 +119,42 @@ namespace JsonConfig
 		private static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
+            		var lastRead = File.GetLastWriteTime(info.FullName);
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
-				User = (ConfigObject) ParseJson (File.ReadAllText (info.FullName));
-				Console.WriteLine ("user configuration has changed, updating config information");
-
-				// invalidate the Global config, forcing a re-merge next time its accessed
-				global_config = null;
-
-				// trigger our event
-				if (OnUserConfigFileChanged != null)
-					OnUserConfigFileChanged ();
+	                	DateTime lastWriteTime = File.GetLastWriteTime(info.FullName);
+		                if (lastWriteTime.Subtract(lastRead).TotalMilliseconds > 100)
+		                {
+		                    Console.WriteLine("user configuration has changed, updating config information");
+		                    try
+		                    {
+		                        User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+		                    }
+		                    catch (IOException)
+		                    {
+		                        System.Threading.Thread.Sleep(100); //Sleep shortly, and try again.
+		                        try
+		                        {
+		                            User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+		                        }
+		                        catch (Exception)
+		                        {
+		                            Console.WriteLine("updating user config failed.");
+		                            throw;
+		                        }
+		                    }
+		
+		
+		                    
+		                    // invalidate the Global config, forcing a re-merge next time its accessed
+		                    global_config = null;
+		
+		                    // trigger our event
+		                    if (OnUserConfigFileChanged != null)
+		                        OnUserConfigFileChanged();
+		                }
+		                lastRead = lastWriteTime;
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
@@ -195,7 +219,8 @@ namespace JsonConfig
 			var json_reader = new JsonReader ();
 			dynamic parsed = json_reader.Read (filtered_json);
 			// convert the ExpandoObject to ConfigObject before returning
-			return ConfigObject.FromExpando (parsed);
+            		var result = ConfigObject.FromExpando(parsed);
+			return result;
 		}
 		// overrides any default config specified in default.conf
 		public static void SetDefaultConfig (dynamic config)
