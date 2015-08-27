@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -29,16 +29,16 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JsonFx, Version=2.0.1209.2802, Culture=neutral, PublicKeyToken=315052dd637f8a52, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\JsonFx.2.0.1209.2802\lib\net40\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Dynamic" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="JsonFx">
-      <HintPath>..\lib\JsonFx.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -62,21 +62,19 @@
     <EmbeddedResource Include="JSON\EnabledModules.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JsonConfig\JsonConfig.csproj">
-      <Project>{10095092-E1E5-441F-9380-B6329F3CFEB4}</Project>
-      <Name>JsonConfig</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DirectoryMerge\" />
-    <Folder Include="DirectoryMerge\MoreFruits\" />
-    <Folder Include="DirectoryMerge\EvenMoreFruits\" />
-    <Folder Include="DirectoryMerge\EvenMoreFruits\EvenEvenMoreFruits\" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectoryMerge\Fruits.json" />
     <None Include="DirectoryMerge\MoreFruits\Apples.json" />
     <None Include="DirectoryMerge\EvenMoreFruits\ListOfFruits.json" />
     <None Include="DirectoryMerge\EvenMoreFruits\EvenEvenMoreFruits\File.json" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JsonConfig\JsonConfig.csproj">
+      <Project>{10095092-e1e5-441f-9380-b6329f3cfeb4}</Project>
+      <Name>JsonConfig</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

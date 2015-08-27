@@ -1,5 +1,6 @@
 # bin folder
 bin/
+obj/
 *.dll
 *.exe
 !lib/*.exe
@@ -8,6 +9,8 @@ bin/
 *.pidb
 *.userprefs
 test-results/
+packages/
+*.suo
 
 # OS X files
 .DS_Store

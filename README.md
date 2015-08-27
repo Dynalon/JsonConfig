@@ -43,19 +43,20 @@ Let's create a sample default.conf for a hypothetical grocery store:
 JsonConfig automatically scan's all assemblies for the presence of a
 default.conf file, so we do not have to add any boilerplate code and can
 directly dive in:
+```csharp
+// exmaple code using our configuration file
+using JsonConfig;
+[...]
+public void PrintInfo () {
+	var storeOwner = Config.Default.StoreOwner;
 
-	// exmaple code using our configuration file
-	using JsonConfig;
-	[...]
-	public void PrintInfo () {
-		var storeOwner = Config.Default.StoreOwner;
+	Console.WriteLine ("Hi there, my name is {0}!", storeOwner);
 
-		Console.WriteLine ("Hi there, my name is {0}!", storeOwner);
+	foreach (var fruit in Config.Default.Fruits)
+		Console.WriteLine (fruit);
 
-		foreach (var fruit in Config.Default.Fruits)
-			Console.WriteLine (fruit);
-
-	}
+}
+```
 
 However, the developer wants the user to make his own configuration file.
 JsonConfig automatically scans for a settings.conf file in the root path of the
@@ -68,24 +69,24 @@ application.
 
 The settings.conf and the default.conf are then merged in a clever
 way and provided via the *Global* configuration.
+```csharp
+public void PrintInfo () {
+	// will result in apple, banana, pear 
+	foreach (var fruit in Config.Default.Fruits)
+		Console.WriteLine (fruit);
 
-	public void PrintInfo () {
-		// will result in apple, banana, pear 
-		foreach (var fruit in Config.Default.Fruits)
-			Console.WriteLine (fruit);
+	// will result in melon, peach
+	foreach (var fruit in Config.User.Fruits)
+		Console.WriteLine (fruit);
 
-		// will result in melon, peach
-		foreach (var fruit in Config.User.Fruits)
-			Console.WriteLine (fruit);
+	// access the Global scope, which is a merge of Default
+	// and User configuration
+	// will result in apple, banana, pear, melon, peach
+	foreach (var fruit in Config.Global.Fruits)
+		Console.WriteLine (fruit);
 
-		// access the Global scope, which is a merge of Default
-		// and User configuration
-		// will result in apple, banana, pear, melon, peach
-		foreach (var fruit in Config.Global.Fruits)
-			Console.WriteLine (fruit);
-
-	}
-
+}
+```
 ### Nesting objects
 
 We are not bound to any hierarchies, any valid JSON is a valid configuration
@@ -112,19 +113,21 @@ object. Take for example a hypothetical webserver configuration:
 
 Above configuration could be accessed via:
 
-	using JsonConfig;
-	[...]
+```csharp
+using JsonConfig;
+[...]
 
-	public void StartWebserver () {
-		// access via Config.Global
-		string serverName = Config.Global.ServerProgramName;
-		bool caching = Config.Global.EnableCaching;
-		int[] listenPorts = Config.Global.ListenPorts;
+public void StartWebserver () {
+	// access via Config.Global
+	string serverName = Config.Global.ServerProgramName;
+	bool caching = Config.Global.EnableCaching;
+	int[] listenPorts = Config.Global.ListenPorts;
 
-		foreach (dynamic website in Config.Global.Websites) {
-			StartNewVhost (website.Path, website.Domain, website.Contact);
-		}
+	foreach (dynamic website in Config.Global.Websites) {
+		StartNewVhost (website.Path, website.Domain, website.Contact);
 	}
+}
+```
 
 ### "Magic" prevention of null pointer exceptions
 
@@ -132,43 +135,45 @@ Choosing reasonable default values is only a matter of supplying a good
 default.conf. But using some C# 4.0 dynamic "magic", non-existant configuration
 values will not throw a NullPointer exception:
 
-	// we are lazy and do not want to give default values for configuration
-	// objects, but just want them to be false
+```csharp
+// we are lazy and do not want to give default values for configuration
+// objects, but just want them to be false
 
-	// there is no need to have LoadedModules OR HttpServer in your
-	// default.conf, if missing this will just evaluate to false
-	if (Config.Global.LoadedModules.HttpServer) {
-		// start HttpServer
-	}
+// there is no need to have LoadedModules OR HttpServer in your
+// default.conf, if missing this will just evaluate to false
+if (Config.Global.LoadedModules.HttpServer) {
+	// start HttpServer
+}
 
-	// more drastic example, its safe to write
-	if (Config.Global.nonexistant.field.that.never.will.be.given) {
-		// this will never be run unless you create that structure in your
-		// config files
-	}
+// more drastic example, its safe to write
+if (Config.Global.nonexistant.field.that.never.will.be.given) {
+	// this will never be run unless you create that structure in your
+	// config files
+}
 
-	// when the configuration value is cast to string, it will be null if not
-	// given
-	if (string.IsNullOrEmpty (Config.Global.some.nonexistant.nested.field)) {
-		// will most likely be run all the times
-	}
+// when the configuration value is cast to string, it will be null if not
+// given
+if (string.IsNullOrEmpty (Config.Global.some.nonexistant.nested.field)) {
+	// will most likely be run all the times
+}
+```
 
 The "magic" allows you to cast a not-yet existing field to common types, which will then have empty or default values:
+```csharp
+foreach (string name in Config.Global.NonExistantField as string[]) {
+	// instead of being cast to null, if a non-existing field is cast to string[] it
+	// will just be an empty array: string[] { }
+	Console.WriteLine (name);
+}
 
-	foreach (string name in Config.Global.NonExistantField as string[]) {
-		// instead of being cast to null, if a non-existing field is cast to string[] it
-		// will just be an empty array: string[] { }
-		Console.WriteLine (name);
-	}
-
-	// works for nullable types, too. Nullable types will
-	// cast to null if not exsisting in the config.
-	var processFiles = (bool?) Config.Global.ProcessFiles;
-	if (processFiles != null) {
-		// will only be run if ProcessFiles is present in the config
-		DoSomethingWithDirectory (processFiles);
-	}
-
+// works for nullable types, too. Nullable types will
+// cast to null if not exsisting in the config.
+var processFiles = (bool?) Config.Global.ProcessFiles;
+if (processFiles != null) {
+	// will only be run if ProcessFiles is present in the config
+	DoSomethingWithDirectory (processFiles);
+}
+```
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Dynalon/jsonconfig/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
