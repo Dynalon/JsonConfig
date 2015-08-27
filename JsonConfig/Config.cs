@@ -219,7 +219,7 @@ namespace JsonConfig
 			var json_reader = new JsonReader ();
 			dynamic parsed = json_reader.Read (filtered_json);
 			// convert the ExpandoObject to ConfigObject before returning
-            var result = ConfigObject.FromExpando(parsed);
+            		var result = ConfigObject.FromExpando(parsed);
 			return result;
 		}
 		// overrides any default config specified in default.conf
