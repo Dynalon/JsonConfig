@@ -119,42 +119,42 @@ namespace JsonConfig
 		private static FileSystemWatcher userConfigWatcher;
 		public static void WatchUserConfig (FileInfo info)
 		{
-            var lastRead = File.GetLastWriteTime(info.FullName);
+            		var lastRead = File.GetLastWriteTime(info.FullName);
 			userConfigWatcher = new FileSystemWatcher (info.Directory.FullName, info.Name);
 			userConfigWatcher.NotifyFilter = NotifyFilters.LastWrite;
 			userConfigWatcher.Changed += delegate {
-                DateTime lastWriteTime = File.GetLastWriteTime(info.FullName);
-                if (lastWriteTime.Subtract(lastRead).TotalMilliseconds > 100)
-                {
-                    Console.WriteLine("user configuration has changed, updating config information");
-                    try
-                    {
-                        User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
-                    }
-                    catch (IOException)
-                    {
-                        System.Threading.Thread.Sleep(100); //Sleep shortly, and try again.
-                        try
-                        {
-                            User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("updating user config failed.");
-                            throw;
-                        }
-                    }
-
-
-                    
-                    // invalidate the Global config, forcing a re-merge next time its accessed
-                    global_config = null;
-
-                    // trigger our event
-                    if (OnUserConfigFileChanged != null)
-                        OnUserConfigFileChanged();
-                }
-                lastRead = lastWriteTime;
+	                	DateTime lastWriteTime = File.GetLastWriteTime(info.FullName);
+		                if (lastWriteTime.Subtract(lastRead).TotalMilliseconds > 100)
+		                {
+		                    Console.WriteLine("user configuration has changed, updating config information");
+		                    try
+		                    {
+		                        User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+		                    }
+		                    catch (IOException)
+		                    {
+		                        System.Threading.Thread.Sleep(100); //Sleep shortly, and try again.
+		                        try
+		                        {
+		                            User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
+		                        }
+		                        catch (Exception)
+		                        {
+		                            Console.WriteLine("updating user config failed.");
+		                            throw;
+		                        }
+		                    }
+		
+		
+		                    
+		                    // invalidate the Global config, forcing a re-merge next time its accessed
+		                    global_config = null;
+		
+		                    // trigger our event
+		                    if (OnUserConfigFileChanged != null)
+		                        OnUserConfigFileChanged();
+		                }
+		                lastRead = lastWriteTime;
 			};
 			userConfigWatcher.EnableRaisingEvents = true;
 		}
