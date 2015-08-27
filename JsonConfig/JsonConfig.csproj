@@ -38,7 +38,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
-  <PlatformTarget>x86</PlatformTarget>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">		
       <OutputPath>bin\Release\</OutputPath>		
       <DebugType>pdbonly</DebugType>		
