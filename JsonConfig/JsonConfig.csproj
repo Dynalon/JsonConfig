@@ -37,7 +37,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JsonFx, Version=2.0.1209.2802, Culture=neutral, PublicKeyToken=315052dd637f8a52, processorArchitecture=MSIL">

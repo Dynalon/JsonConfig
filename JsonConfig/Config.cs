@@ -133,7 +133,7 @@ namespace JsonConfig
                     }
                     catch (IOException)
                     {
-                        System.Threading.Thread.Sleep(100); //Sleep three seconds, and try again.
+                        System.Threading.Thread.Sleep(100); //Sleep shortly, and try again.
                         try
                         {
                             User = (ConfigObject)ParseJson(File.ReadAllText(info.FullName));
