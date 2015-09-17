@@ -27,9 +27,9 @@ using System.Dynamic;
 using System.Reflection;
 using System.IO;
 
-using JsonFx;
-using JsonFx.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JsonConfig 
 {
@@ -216,10 +216,13 @@ namespace JsonConfig
 			
 			var filtered_json = string.Join ("\n", filtered);
 			
-			var json_reader = new JsonReader ();
-			dynamic parsed = json_reader.Read (filtered_json);
+			var parsed = JsonConvert.DeserializeObject<ExpandoObject> (filtered_json, new ExpandoObjectConverter());
+
+			// transform the ExpandoObject to the format expected by ConfigObject
+			parsed = JsonNetAdapter.Transform(parsed);
+
 			// convert the ExpandoObject to ConfigObject before returning
-            		var result = ConfigObject.FromExpando(parsed);
+			var result = ConfigObject.FromExpando(parsed);
 			return result;
 		}
 		// overrides any default config specified in default.conf

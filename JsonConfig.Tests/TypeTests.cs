@@ -7,6 +7,8 @@ using System.Reflection;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JsonConfig.Tests
 {
@@ -42,10 +44,9 @@ namespace JsonConfig.Tests
 			var name = "Types";
 			var jsonTests = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("JsonConfig.Tests.JSON." + name + ".json");
 			var sReader = new StreamReader (jsonTests);
-			var jReader = new JsonFx.Json.JsonReader ();
-			dynamic parsed = jReader.Read (sReader.ReadToEnd ());
+			dynamic parsed = JsonConvert.DeserializeObject<ExpandoObject>(sReader.ReadToEnd (), new ExpandoObjectConverter());
 
-			dynamic config = ConfigObject.FromExpando (parsed);
+			dynamic config = ConfigObject.FromExpando (JsonNetAdapter.Transform(parsed));
 
 			Assert.AreEqual ("bar", config.Foo);
 			Assert.AreEqual ("bar", ((ICollection<dynamic>) config.NestedArray).First ().Foo);

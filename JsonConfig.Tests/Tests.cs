@@ -4,7 +4,6 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.CSharp;
 
-using JsonFx;
 using NUnit.Framework;
 using JsonConfig;
 using System.Reflection;
