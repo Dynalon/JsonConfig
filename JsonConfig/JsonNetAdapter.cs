@@ -16,33 +16,25 @@ namespace JsonConfig
 
             foreach (var kvp in data)
             {
-                if (kvp.Value is ExpandoObject)
-                {
-                    edict[kvp.Key] = Transform((ExpandoObject)kvp.Value);
-                }
-                else if (kvp.Value is List<object>)
-                {
-                    var result = ConvertList((List<object>)kvp.Value);
-
-                    if (result.GetType().GetElementType() == typeof(ExpandoObject))
-                    {
-                        var expandoArray = (ExpandoObject[])result;
-
-                        for (var i = 0; i < expandoArray.Length; i++)
-                        {
-                            expandoArray[i] = Transform(expandoArray[i]);
-                        }
-                    }
-
-                    edict[kvp.Key] = result;
-                }
-                else
-                {
-                    edict[kvp.Key] = kvp.Value;
-                }
+                edict[kvp.Key] = TransformByType(kvp.Value);
             }
 
             return newExpando;
+        }
+
+        private static object TransformByType(object value)
+        {
+            if (value is ExpandoObject)
+            {
+                return Transform((ExpandoObject)value);
+            }
+
+            if (value is List<object>)
+            {
+                return ConvertList((List<object>)value);
+            }
+
+            return value;
         }
 
         private static object ConvertList(List<object> list)
@@ -61,7 +53,7 @@ namespace JsonConfig
             foreach (var v in list)
             {
                 hasSingleType = hasSingleType && listType == v.GetType();
-                tList.Add(v);
+                tList.Add(TransformByType(v));
             }
 
             return tList.ToArray(hasSingleType && listType != null ? listType : typeof(object));
